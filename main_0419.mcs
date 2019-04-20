@@ -1,0 +1,30 @@
+local function ModuleInit()
+    local obj = io.popen('cd')
+    local path = obj:read('*all'):sub(1, -2)
+    obj:close()
+    package.path = package.path .. ';' .. path.. '\\00Data\\?.lua;' .. path.. '\\01Class\\?.lua;' .. path.. '\\02Module\\?.lua'
+    VRPIO = require 'VRPIO'    --set nodes 
+--    require 'Solution'
+--    require 'Route'
+--    require 'Environment'
+   
+--    Algorithms = require 'Algorithms'
+--    Constructives = require 'Constructives'
+--    Preprocessing = require 'Preprocessing'
+end 
+
+function main()
+    ModuleInit()
+    VRPIO.read_solomon('C101', 25)
+    local starttime = os.time()
+    
+    
+    
+    print('The total computation time=', os.time() - starttime)
+end 
+
+
+
+main()
+
+
