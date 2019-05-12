@@ -9,7 +9,7 @@ function SteepestDescent(operator, strategy)
     while true do
         local move = Neighborhood(operator, strategy)
         if move.delta<0 then
-            giant:executeMove(move)
+            move:execute()
         else 
             break
         end 
@@ -32,7 +32,7 @@ function SimulateAnnealing(operator, ...)
         for i=1,Len do
             local move = RandomNeighbor(operator)
             if SAaccept(move, T) then
-                giant:executeMove(move)
+                move:execute()
             end 
             if giant:getCost() < best_solution.cost then
                 best_solution = giant:convert2Routes()
@@ -53,9 +53,9 @@ function VariableNeighborhoodSearch(operators, max_iter)
         RandomNeighbor(operators[math.random(#operators)])
         local index = 1
         while index<=#neighbors do
-            move = Neighborhood(operators[index])
-            if move<0 then
-                solution:execute(move)
+            local move = Neighborhood(operators[index])
+            if move.delta < 0 then
+                move:execute()
                 index = 1
             else 
                 index = index + 1
