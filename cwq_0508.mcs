@@ -1,0 +1,67 @@
+local function ModuleInit()
+    local obj = io.popen('cd')
+    local path = obj:read('*all'):sub(1, -2)
+    obj:close()
+    package.path = package.path .. ';' .. path.. '\\00Data\\?.lua;' .. path.. '\\01Class\\?.lua;' .. path.. '\\02Module\\?.lua'
+    
+    require 'Solution'
+    require 'Route'
+    require 'GiantTour'
+    require 'BasicFunction'
+    
+    VRPIO = require 'VRPIO'    --set nodes 
+    Constructives = require 'Constructives'
+    Algorithms = require 'Algorithms'
+--    Preprocessing = require 'Preprocessing'
+end 
+
+function main()
+    --require 'mobdebug'.off()
+    ModuleInit()
+    local matrix = VRPIO.read_txt('customers')
+    nodes = {}
+    for i=1,#matrix do
+        local node = {weight = matrix[1], volume = 0, time = matrix[2], time1 = matrix[5], time2 = matrix[6]}
+        nodes[#nodes] = node
+    end
+    matrix = VRPIO.read_txt('distance', 1)
+    Dis = {}
+    for i=1,#matrix do
+        Dis[i-1] = {}
+        for j=1,#matrix[i] do
+            Dis[i-1][j-1] = matrix[i][j]    
+        end 
+    end 
+    for i=0,#matrix-1 do
+        for j=i,#matrix-1 do
+            Dis[i][j] = Dis[j][i]
+        end 
+    end 
+    matrix = VRPIO.read_txt('travel_time', 1)
+    Time = {}
+    for i=1,#matrix do
+        Time[i-1] = {}
+        for j=1,#matrix[i] do
+            Time[i-1][j-1] = matrix[i][j]    
+        end 
+    end 
+    for i=0,#matrix-1 do
+        for j=i,#matrix-1 do
+            Time[i][j] = Time[j][i]
+        end 
+    end 
+    vehicle = {{weight=7, volume=0,fc=50, tc=0.002,wt=0.5}}
+    
+    solution = Solution:new()
+    Constructives.NearestInsertion(0.9, 0.05, 0.05)
+    
+    
+    
+end 
+
+
+
+
+main()
+
+
