@@ -68,20 +68,18 @@ local function relocateTest(node, pos)
 end
 
 function node_relocate()
-    --selected one node be relocated to pos --move type = 1
     for i=1,#nodes do
         local delta_free = freeNodeDelta(i)
         local j = -1 
         repeat 
             local sign 
-            --1 i==j; 2 j.suc==i; 3 j.route is empty
             if j ~= i and j ~= nodes[i].pre and nodes[j].id ~= nodes[nodes[j].suc].id then
                 if nodes[i].route == nodes[j].route then 
                     
                 else
                     sign = relocateTest(i, j)
                     if sign==true then 
-                        coroutine.yield{delta = delta_free + insertNodeCost(i, j), p = {i,j}, mtp = 1} 
+                        coroutine.yield(RelocateMove:new(delta_free + insertNodeCost(i, j), i, j))
                     end 
                 end
             end 
@@ -124,8 +122,7 @@ function two_opt_star()
             if not ((i < 0 and j<0) or (nodes[i].suc < 0 and nodes[j].suc < 0)) then 
                 if nodes[i].route == nodes[j].route then
                     if isReverseSegmentFeasible(nodes[i].suc, j) then
-                        --if j is the start depot, one route be deleted
-                        coroutine.yield{delta = delta_free + dis(i, j) + dis(nodes[i].suc, nodes[j].suc), p={i,j}, mtp=0}
+                        coroutine.yield(TwoOptMove:new(delta_free + dis(i, j) + dis(nodes[i].suc, nodes[j].suc), i, j))
                     else
                         --next route
                         sign = false
@@ -134,7 +131,7 @@ function two_opt_star()
                     sign = isConcate2SegmentsFeasible(j, nodes[i].suc) 
                     if sign and isConcate2SegmentsFeasible(i, nodes[j].suc) then
                         local delta = ((j < 0 and nodes[i].suc < 0) or  (i < 0 and nodes[j].suc < 0)) and vehicle[nodes[j].vtp].fc or 0
-                        coroutine.yield{delta = delta + dis(i, nodes[j].suc) + dis(j, nodes[i].suc) - dis(i, nodes[i].suc) - dis(j, nodes[j].suc), p={i,j}, mtp=0}
+                        coroutine.yield(TwoOptStarMove:new(delta + dis(i, nodes[j].suc) + dis(j, nodes[i].suc) - dis(i, nodes[i].suc) - dis(j, nodes[j].suc), i, j))
                     end 
                 end 
             end 
@@ -167,16 +164,14 @@ local function swapNodeDelta(node1, node2)
 end 
 
 function node_swap()
-    --swap two nodes; move type = 2
     for i=1,#nodes do
         for j=i+1,#nodes do
             if nodes[i].route ~= nodes[j].route then 
                 if insertTest(nodes[i].pre, j, nodes[i].suc) and insertTest(nodes[j].pre, i, nodes[j].suc) then 
-                    coroutine.yield{delta = swapNodeDelta(i, j), p = {i,j}, mtp = 2} 
+                    coroutine.yield(SwapMove:new(swapNodeDelta(i, j), i, j)) 
                 end 
             end 
         end 
     end 
 end 
-
 ---------------------------------node_swap----------------------------------------------------------

@@ -13,5 +13,27 @@ A framework of algorithms for VRP with side constraints
     2. Memetic Algorithm
 
 
+
+
+# Solution Data Structure
+1. multiple routes list
+2. giant tour  nodes[0]
+    - origin = 0
+    - depot = -1,-2,-3   第1，2，3条路径  记录车辆类型   {x,y,id=0,weight=0,volume=0,time1=0,time2=1440,stime=0,route=-1,pre=,suc=}
+    - customer = 1,2,3,4,5 {x,y,id=1,weight=,volume=,time1=,time2=,stime=,route=-1, pre=, suc=}
+
+node : 节点的ID
+point : 节点的table，包含各种类型== nodes[i] = {x,y,id=i, bT,bW,bV,fT,fW,fV, vtp, route}
+
+
+
+
+
+
+
+
+
+
+
 [hhahh](https://github.com/OliverYangMin/Min_VRP-Solver/blob/master/README.md)
 

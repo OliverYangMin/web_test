@@ -3,28 +3,46 @@ local function ModuleInit()
     local path = obj:read('*all'):sub(1, -2)
     obj:close()
     package.path = package.path .. ';' .. path.. '\\00Data\\?.lua;' .. path.. '\\01Class\\?.lua;' .. path.. '\\02Module\\?.lua'
+    require 'Move'
+    require 'Solution'
+    require 'Route'
+    require 'GiantTour'
+    require 'BasicFunction'
+    
     VRPIO = require 'VRPIO'    --set nodes 
---    require 'Solution'
---    require 'Route'
---    require 'Environment'
-   
---    Algorithms = require 'Algorithms'
---    Constructives = require 'Constructives'
+    Constructives = require 'Constructives'
+    Algorithms = require 'Algorithms'
 --    Preprocessing = require 'Preprocessing'
 end 
 
 function main()
+    --require 'mobdebug'.off()
     ModuleInit()
-    VRPIO.read_solomon('C101', 25)
+    nodes, Dis, Time, vehicle = VRPIO.read_solomon('R101', 100)
+    math.randomseed(195)
     local starttime = os.time()
     
+    solution = Solution:new()
+    Constructives.NearestInsertion(0.9, 0.05, 0.05)
+--    --Constructives.ClarkWright(0, 0.8)
+    solution:convert2Giant()
+    giant = GiantTour:new() 
     
+-----------------------Improvement Phase-------------------------------------------------------------------------------------------    
+    Algorithms.SteepestDescent(node_swap)
+    Algorithms.SteepestDescent(two_opt_star)
+    --require 'mobdebug'.on()
+    Algorithms.SteepestDescent(node_relocate)
     
-    print('The total computation time=', os.time() - starttime)
+--    routes = Algorithms.SimulateAnnealing(node_relocate)
+--    print(routes.cost)
+    --require 'mobdebug'.on()
+    giant:plot()
+    giant:isFeasible()
+    print('The algorithm`s total computation time=', os.time() - starttime)
+    print('The total cost of best tour plan = ', (giant:getCost()))
+    print('The number of vehicle be used: ', giant:getRouteNum())
 end 
-
-
-
 main()
 
 
