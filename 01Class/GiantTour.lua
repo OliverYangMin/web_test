@@ -12,6 +12,7 @@ function GiantTour:new()
 end 
 
 function GiantTour:isFeasible()
+
     local node = -1
     local t = 0
     repeat 
@@ -45,8 +46,7 @@ end
 
 function GiantTour:getCost()
     local cPoint, distance, cost = nodes[-1], 0, 0 
-    ---reverse order
-    repeat --cPoint.pre ~= -1 do
+    repeat 
         distance = distance + dis(cPoint.pre, cPoint.id)
         cost = cost + dis(cPoint.pre, cPoint.id) * vehicle[cPoint.vtp].tc + math.max(0, cPoint.time1 - cPoint.bT) * vehicle[cPoint.vtp].wc
         if cPoint.pre < 0 and cPoint.id > 0 then cost = cost + vehicle[cPoint.vtp].fc end 

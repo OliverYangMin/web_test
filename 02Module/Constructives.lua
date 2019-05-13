@@ -119,9 +119,6 @@ function NearestInsertion(...)
         local min, min_v = 0, math.huge
         for i=1,#unrouted do
             if isFeasiblePushBack(unrouted[i]) then 
-                if not unrouted[i] then 
-                    print()
-                end 
                 local cclose = closet(route[#route], unrouted[i])
                 if cclose<min_v then
                     min,min_v = i, cclose

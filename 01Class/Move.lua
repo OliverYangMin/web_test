@@ -136,6 +136,7 @@ end
 -------------------------------------------------------------------------------------------------------------------------------------------------------
 RelocateMove = Move:new(delta)
 RelocateMove.__index = RelocateMove
+
 function RelocateMove:new(delta, node, pos)
     local self = {delta = delta, node = node, pos = pos}
     setmetatable(self, RelocateMove)

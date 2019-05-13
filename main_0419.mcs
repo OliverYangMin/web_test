@@ -4,12 +4,14 @@ local function ModuleInit()
     obj:close()
     package.path = package.path .. ';' .. path.. '\\00Data\\?.lua;' .. path.. '\\01Class\\?.lua;' .. path.. '\\02Module\\?.lua'
     require 'Move'
+    require 'Delta'
+    require 'Feasible'
     require 'Solution'
     require 'Route'
     require 'GiantTour'
     require 'BasicFunction'
     
-    VRPIO = require 'VRPIO'    --set nodes 
+    VRPIO = require 'VRPIO'   
     Constructives = require 'Constructives'
     Algorithms = require 'Algorithms'
 --    Preprocessing = require 'Preprocessing'
@@ -27,6 +29,8 @@ function main()
 --    --Constructives.ClarkWright(0, 0.8)
     solution:convert2Giant()
     giant = GiantTour:new() 
+    cDelta = Delta:new()
+    feasible = Feasible:new()
     
 -----------------------Improvement Phase-------------------------------------------------------------------------------------------    
     Algorithms.SteepestDescent(node_swap)
@@ -37,12 +41,9 @@ function main()
 --    routes = Algorithms.SimulateAnnealing(node_relocate)
 --    print(routes.cost)
     --require 'mobdebug'.on()
-    giant:plot()
-    giant:isFeasible()
-    print('The algorithm`s total computation time=', os.time() - starttime)
-    print('The total cost of best tour plan = ', (giant:getCost()))
-    print('The number of vehicle be used: ', giant:getRouteNum())
+    displayResult(starttime)
 end 
+
 main()
 
 

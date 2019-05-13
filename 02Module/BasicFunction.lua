@@ -3,6 +3,14 @@
 -- start date: 2019-04-20
 -- authors: YangMin
 
+function displayResult(start_time)
+    --giant:plot()
+    giant:isFeasible()
+    print('The algorithm`s total computation time=', os.time() - start_time)
+    print('The total cost of best tour plan = ', (giant:getCost()))
+    print('The number of vehicle be used: ', giant:getRouteNum())
+end 
+
 function dis(i, j)
     i = i>0 and i or 0
     j = j>0 and j or 0
