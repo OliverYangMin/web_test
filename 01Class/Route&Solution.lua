@@ -1,20 +1,3 @@
---class name: Route
---information: a kind of solution routes data structure for constructive algorithms
---date：2019-04-17
---author: YangMin
-Node = {}
-Node.__index = Node
-
-function Node:new(id, x, y, weight, time1, time2, stime, volume)
-    local self = {id = id, x = x, y = y, weight = weight, volume = volume or 0, time1 = time1, time2 = time2, stime = stime}
-    setmetatable(self, Node)
-    return self
-end 
-
-
-
-
-
 Route = {vtp = 1}
 Route.__index = Route
 
@@ -23,24 +6,23 @@ function Route:new(vtp)
     setmetatable(self, Route)
     self.vtp = vtp or 1
     self[0] = {id=0, fT = nodes[0].time1, bT=nodes[0].time2, fW = 0, fV = 0, bW=0, bV=0} 
-    --point = {id=2, ptype=2, fW,bW,fV,bV,fT,bT,fY,bY}  a set of label for the node in route, which indicate the information for them, in order to check feasibility of route
     return self
 end 
 
-local function forward_mark(route, p)
-    for i=p,#route do
-        route[i].fT = push_forward(route[i-1], route[i].id)
-        route[i].fW = route[i-1].fW + nodes[route[i].id].weight
-        route[i].fV = route[i-1].fV + nodes[route[i].id].volume
+function Route:forward_mark(p)
+    for i=p,#self do
+        self[i].fT = push_forward(self[i-1], self[i].id)
+        self[i].fW = self[i-1].fW + nodes[self[i].id].weight
+        self[i].fV = self[i-1].fV + nodes[self[i].id].volume
     end 
 end 
 
-local function backward_mark(route, p)
+function Route:backward_mark(p)
     for i=p,1,-1 do
-        local point = route[i+1] or {id=0, bT=nodes[0].time2, bW=0, bV=0}
-        route[i].bT = push_backward(point, route[i].id)
-        route[i].bW = point.bW + nodes[route[i].id].weight
-        route[i].bV = point.bV + nodes[route[i].id].volume
+        local point = self[i+1] or {id = 0, bT = nodes[0].time2, bW = 0, bV = 0}
+        self[i].bT = push_backward(point, self[i].id)
+        self[i].bW = point.bW + nodes[self[i].id].weight
+        self[i].bV = point.bV + nodes[self[i].id].volume
     end
 end 
 
@@ -50,11 +32,11 @@ function Route:push_back(node_id)
     fT = push_forward(forward, node_id)
     bT = nodes[node_id].time2
     table.insert(self, {id=node_id, fT=fT, bT=bT, fW=forward.fW + nodes[node_id].weight, fV=forward.fV + nodes[node_id].volume, bW=nodes[node_id].weight, bV=nodes[node_id].volume})
-    backward_mark(self, #self-1)
+    self:backward_mark(#self-1)
 end 
 
 function Route:append(point)
-    table.insert(self, point)
+    self[#self+1] = point
 end 
 
 function Route:push_back_seq(seq)
@@ -67,9 +49,16 @@ function Route:push_back_seq(seq)
     self[#self].bW = nodes[seq[#seq].id].weight
     self[#self].bV = nodes[seq[#seq].id].volume
     self[#self].bT = nodes[seq[#seq].id].time2
-    backward_mark(self, #self-1)
+    self:backward_mark(#self-1)
 end 
 
+function Route:getCost()
+    local cost = vehicle[self.vtp].fc
+    for i=1,#self do
+        cost = cost + dis(self[i-1].id, self[i].id) * vehicle[self.vtp].tc + math.max(0, nodes[self[i].id].time2 - self[i].bT) * vehicle[self.vtp].wc
+    end
+    return cost + dis(self[#self].id, 0) * vehicle[self.vtp].tc
+end 
 
 function Route:clone()
     return DeepCopy(self)
@@ -78,10 +67,9 @@ end
 Solution = {cost = false, pena_cost = false, feasible = true}
 Solution.__index = Solution
 
-function Solution:new()
-    local self = {}
+function Solution:new(cost)
+    local self = {cost = cost}
     setmetatable(self, Solution)
-    self.cost = false
     self.pena_cost = false
     self.feasible = true
     return self
@@ -122,29 +110,16 @@ end
 function Solution:appendRoute(route)
     table.insert(self, route)
 end 
+
 function Solution:getCost()
     local cost = 0
-    local total_distance = 0
     for r,route in ipairs(self) do
-        if route[1] then 
-            for i=1,#route do
-                if route[i].bT > nodes[route[i].id].time2 then 
-                    self.isfeasible = false
-                    self.cost = math.huge 
-                    return self.cost
-                end
-                cost = cost + dis(route[i-1].id, route[i].id) * vehicle[route.vtp].tc + math.max(0,  nodes[route[i].id].time1 - route[i].bT) * vehicle[route.vtp].wc
-                total_distance = total_distance +  dis(route[i-1].id, route[i].id)
-            end 
-            cost = cost + dis(route[#route].id,1) * vehicle[route.vtp].tc + vehicle[route.vtp].fc  
-            total_distance = total_distance +  dis(route[#route].id,1)
-        end
-        -- waittime cost
+        cost = cost + route:getCost()
     end 
-    print('Total distance: ', total_distance)
     self.cost = cost
     return self.cost
 end 
+
 function Solution:output()
     io.output('Result.csv')
     io.write('trans_code, dist_seq, distacne\n')
@@ -209,8 +184,5 @@ function Solution:plot()
     end 
     SetParameter(Routes, "COLORS_TYPE", 3)
     Update(Routes)
-    CreateView('vrp result cost: ' .. self:getCost(), Nodes, Routes)
+    CreateView('vrp result cost: ' .. self.cost, Nodes, Routes)
 end
-
-
-

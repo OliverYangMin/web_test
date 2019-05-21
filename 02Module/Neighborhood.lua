@@ -15,6 +15,7 @@ function Neighborhood(operator, strategy)
         end 
     end  
     return move
+    --operator()
 end 
 
 function RandomNeighbor(operator)
@@ -73,16 +74,20 @@ function two_opt_star()
         local j = nodes[i].suc < 0 and  nodes[i].suc or nodes[nodes[i].suc].suc  
         while j ~= -1 and j >= nodes[nodes[-1].pre].route do
             local sign = true 
-            if not ((i < 0 and j<0) or (nodes[i].suc < 0 and nodes[j].suc < 0)) then 
+            if not ((i < 0 and j < 0) or (nodes[i].suc < 0 and nodes[j].suc < 0)) then 
                 local move 
                 if feasible:sameRoute(i, j) then
-                    move = create2OptMove(i, j) 
-                    if not move then sign = false end
+                    if not (i < 0 and nodes[j].suc < 0) then 
+                        move = create2OptMove(i, j) 
+                        if not move then sign = false end
+                    end
                 else
                     sign = feasible:concateTwoSegments(j, nodes[i].suc) 
                     if sign then move = create2OptStarMove(i, j) end 
                 end 
-                if move then coroutine.yield(move) end
+                if move then 
+                    coroutine.yield(move) 
+                end
             end 
             j = sign and nodes[j].suc or nodes[j].route - 1
         end

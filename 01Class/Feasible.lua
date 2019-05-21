@@ -7,13 +7,22 @@ function Feasible:new()
     return self
 end 
 
+function Feasible:weight_volume(cPoint1, cPoint2, cPoint3)
+    if cPoint3 then 
+        return cPoint1.fW + cPoint2.weight + cPoint3.bW <= vehicle[cPoint1.vtp].weight and cPoint1.fV + cPoint2.volume + cPoint3.bV <= vehicle[cPoint1.vtp].volume 
+    else
+        return cPoint1.fW + cPoint2.bW <= vehicle[cPoint1.vtp].weight and cPoint1.fV + cPoint2.bV <= vehicle[cPoint1.vtp].volume 
+    end    
+end 
 
 function Feasible:giantTour()
     local node = -1
     local t = 0
     repeat 
         t = t + nodes[node].stime + time(node, nodes[node].suc)
-        if t > nodes[nodes[node].suc].time2 then print(node,nodes[node].suc) return false end 
+        if t > nodes[nodes[node].suc].time2 then 
+            print(node,'infeasible ',nodes[node].suc) return false 
+        end 
         t = math.max(nodes[nodes[node].suc].time1, t)
         if nodes[node].suc<0 then t = 0 end 
         node = nodes[node].suc
@@ -22,7 +31,7 @@ function Feasible:giantTour()
 end 
 
 function Feasible:insert(node1, node2, node3)
-    if checkWV(nodes[node1], nodes[node2], nodes[node3]) then 
+    if self:weight_volume(nodes[node1], nodes[node2], nodes[node3]) then 
         if dis(node1, node2) and dis(node2, node3) then     
             local fT = push_forward(nodes[node1], node2)
             if fT <= nodes[node2].time2 and fT + nodes[node2].stime + time(node2, node3) <= nodes[node3].bT then
@@ -35,7 +44,7 @@ end
 
 function Feasible:relocate(node, pos)
     local point1, point2, point3 = nodes[pos], nodes[node], nodes[nodes[pos].suc]
-    if checkWV(point1, point2, point3) and dis(point1.id, point2.id) then 
+    if self:weight_volume(point1, point2, point3) and dis(point1.id, point2.id) then 
         if dis(point2.id, point3.id) then     
             local fT = push_forward(point1, point2.id)
             if fT > point2.time2 then
@@ -64,7 +73,7 @@ end
 
 
 function Feasible:concateTwoSegments(node1, node2)
-    if not checkWV(nodes[node1], nodes[node2]) then
+    if not self:weight_volume(nodes[node1], nodes[node2]) then
         return false --'capacity_violation'
     elseif not dis(node1, node2) then
         return false --'accessbility_violation'

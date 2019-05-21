@@ -21,6 +21,7 @@ end
 -------------------------------------------------------------------------------------------------------------------------------------------------------
 TwoOptMove = Move:new(delta)
 TwoOptMove.__index = TwoOptMove
+
 function TwoOptMove:new(delta, pos1, pos2)
     local self = {delta = delta, pos1 = pos1, pos2 = pos2}
     setmetatable(self, TwoOptMove)
@@ -44,9 +45,9 @@ end
 
 function TwoOptMove:execute()
     reverseLink(self.pos1, self.pos2)
-    markForward(self.pos1)
-    markBackward(self.pos2)
-     self:print('2-Opt')
+    nodes:markForward(self.pos2)
+    nodes:markBackward(self.pos1)
+    self:print('2-Opt')
 end 
 -------------------------------------------------------------------------------------------------------------------------------------------------------
 TwoOptStarMove = Move:new()
@@ -60,7 +61,7 @@ end
 
 local function crossRoutes(pos1, pos2)
     local nxt1 = nodes[pos1].route - 1 
-    local nxt2 = nodes[pos2].route == - giant:getRouteNum() and -1 or nodes[pos2].route - 1
+    local nxt2 = nodes[pos2].route == - nodes:getRouteNum() and -1 or nodes[pos2].route - 1
     local seg1h, seg1d, seg2h,seg2d
     if nodes[pos1].suc < 0 then 
         seg1h, seg1d = 0, 0
@@ -90,10 +91,10 @@ local function crossRoutes(pos1, pos2)
         nodes[nxt2].pre = seg1d
         nodes[seg1h].pre = pos2
     end 
-    markForward(nodes[pos1].suc)
-    markBackward(pos1)
-    markForward(nodes[pos2].suc)
-    markBackward(pos2)
+    nodes:markForward(nodes[pos1].suc)
+    nodes:markBackward(pos1)
+    nodes:markForward(nodes[pos2].suc)
+    nodes:markBackward(pos2)
     local node = nodes[pos1].suc
     while node>0 do
         nodes[node].route, nodes[node].vtp = nodes[pos1].route, nodes[pos1].vtp
@@ -109,6 +110,7 @@ end
 function TwoOptStarMove:execute()
     crossRoutes(self.pos1, self.pos2)
     self:print('2-Opt*')
+    feasible:giantTour()
 end
 -------------------------------------------------------------------------------------------------------------------------------------------------------
 SwapMove = Move:new()
@@ -125,10 +127,10 @@ function SwapMove:execute()
     nodes[point2.pre].suc, nodes[point2.suc].pre = point1.id, point1.id
     point1.pre, point2.pre = point2.pre, point1.pre
     point1.suc, point2.suc = point2.suc, point1.suc
-    markForward(point1.id)
-    markBackward(point1.id)
-    markForward(point2.id)
-    markBackward(point2.id)
+    nodes:markForward(point1.id)
+    nodes:markBackward(point1.id)
+    nodes:markForward(point2.id)
+    nodes:markBackward(point2.id)
     point1.route, point2.route = point2.route, point1.route
     point1.vtp, point2.vtp = point2.vtp, point1.vtp
     self:print('Swap')
@@ -146,15 +148,15 @@ end
 local function removePoint(cPoint)
     nodes[cPoint.pre].suc = cPoint.suc
     nodes[cPoint.suc].pre = cPoint.pre
-    markForward(cPoint.suc)
-    markBackward(cPoint.pre)
+    nodes:markForward(cPoint.suc)
+    nodes:markBackward(cPoint.pre)
 end 
 
 local function insertPoint(cPoint, pos)
     cPoint.pre, cPoint.suc = pos, nodes[pos].suc 
     nodes[pos].suc, nodes[nodes[pos].suc].pre = cPoint.id, cPoint.id
-    markForward(cPoint.id)
-    markBackward(cPoint.id)
+    nodes:markForward(cPoint.id)
+    nodes:markBackward(cPoint.id)
     cPoint.route, cPoint.vtp = nodes[cPoint.pre].route, nodes[cPoint.pre].vtp
 end 
 

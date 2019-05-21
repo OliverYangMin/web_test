@@ -2,34 +2,6 @@
 -- purpose: some functions for our object
 -- start date: 2019-04-20
 -- authors: YangMin
-function to_solution()
-    local function getRoute(index)
-        local route = Route:new()
-        repeat 
-            route:append(nodes[index])
-            --table.insert(route, nodes[index].id)
-            index = nodes[index].suc 
-        until index<0
-        return route
-    end 
-    
-    local solu = Solution:new(cDelta:giantTour())
-    local i = -1 
-    while nodes[i] do
-        solu:appendRoute(getRoute(i))
-        i = i - 1 
-    end 
-    return solu
-end 
-
-function getRouteNum()
-    local i = -1 
-    while nodes[i] do
-        i = i - 1
-    end 
-    return -(i + 1)
-end 
-
 
 function dis(i, j)
     i = i>0 and i or 0
@@ -69,35 +41,6 @@ end
 
 function push_backward(point, node)
     return math.min(nodes[node].time2, point.bT - time(node, point.id) - nodes[point.id].stime)
-end 
-
-function checkWV(cPoint1, cPoint2, cPoint3)
-    if cPoint3 then 
-        return cPoint1.fW + cPoint2.weight + cPoint3.bW <= vehicle[cPoint1.vtp].weight and cPoint1.fV + cPoint2.volume + cPoint3.bV <= vehicle[cPoint1.vtp].volume 
-    else
-        return cPoint1.fW + cPoint2.bW <= vehicle[cPoint1.vtp].weight and cPoint1.fV + cPoint2.bV <= vehicle[cPoint1.vtp].volume 
-    end    
-end 
-
-
------------Mark Update-------------------------
-function markForward(node)   --从node开始，包括node，向后更新 f labels 直到碰到终点depot
-    while node > 0 do 
-        nodes[node].fT = push_forward(nodes[nodes[node].pre], node)
-        nodes[node].fW = nodes[nodes[node].pre].fW + nodes[node].weight
-        nodes[node].fV = nodes[nodes[node].pre].fV + nodes[node].volume
-        node = nodes[node].suc
-    end 
-end 
-
-function markBackward(node)   --从node开始，包括node，向前更新 b labels， 直到碰到 起点depot
-    while node > 0 do
-        local point = nodes[node].suc > 0 and nodes[nodes[node].suc] or {id=0, bT=nodes[0].time2, bW=0, bV=0}   --如果保证，depot点的label 都是0，则可以删去此地方
-        nodes[node].bT = push_backward(point, node)
-        nodes[node].bW = point.bW + nodes[node].weight
-        nodes[node].bV = point.bV + nodes[node].volume
-        node = nodes[node].pre
-    end 
 end 
 
 function EarthDistance(node1, node2)
