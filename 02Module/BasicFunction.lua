@@ -2,14 +2,34 @@
 -- purpose: some functions for our object
 -- start date: 2019-04-20
 -- authors: YangMin
-
-function displayResult(start_time)
-    --giant:plot()
-    giant:isFeasible()
-    print('The algorithm`s total computation time=', os.time() - start_time)
-    print('The total cost of best tour plan = ', (giant:getCost()))
-    print('The number of vehicle be used: ', giant:getRouteNum())
+function to_solution()
+    local function getRoute(index)
+        local route = Route:new()
+        repeat 
+            route:append(nodes[index])
+            --table.insert(route, nodes[index].id)
+            index = nodes[index].suc 
+        until index<0
+        return route
+    end 
+    
+    local solu = Solution:new(cDelta:giantTour())
+    local i = -1 
+    while nodes[i] do
+        solu:appendRoute(getRoute(i))
+        i = i - 1 
+    end 
+    return solu
 end 
+
+function getRouteNum()
+    local i = -1 
+    while nodes[i] do
+        i = i - 1
+    end 
+    return -(i + 1)
+end 
+
 
 function dis(i, j)
     i = i>0 and i or 0

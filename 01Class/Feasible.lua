@@ -7,6 +7,20 @@ function Feasible:new()
     return self
 end 
 
+
+function Feasible:giantTour()
+    local node = -1
+    local t = 0
+    repeat 
+        t = t + nodes[node].stime + time(node, nodes[node].suc)
+        if t > nodes[nodes[node].suc].time2 then print(node,nodes[node].suc) return false end 
+        t = math.max(nodes[nodes[node].suc].time1, t)
+        if nodes[node].suc<0 then t = 0 end 
+        node = nodes[node].suc
+    until node == -1
+    return true
+end 
+
 function Feasible:insert(node1, node2, node3)
     if checkWV(nodes[node1], nodes[node2], nodes[node3]) then 
         if dis(node1, node2) and dis(node2, node3) then     

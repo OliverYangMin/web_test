@@ -7,6 +7,18 @@ function Delta:new()
     setmetatable(self, Delta)
     return self
 end 
+
+function Delta:giantTour()
+    local cPoint, distance, cost = nodes[-1], 0, 0 
+    repeat 
+        distance = distance + dis(cPoint.pre, cPoint.id)
+        cost = cost + dis(cPoint.pre, cPoint.id) * vehicle[cPoint.vtp].tc + math.max(0, cPoint.time1 - cPoint.bT) * vehicle[cPoint.vtp].wc
+        if cPoint.pre < 0 and cPoint.id > 0 then cost = cost + vehicle[cPoint.vtp].fc end 
+        cPoint = nodes[cPoint.pre]
+    until nodes[cPoint.pre].suc == -1 
+    return cost, distance
+end 
+
 function Delta:freeNodeCost(node)
     local cost =  dis(nodes[node].pre, nodes[node].suc)  * vehicle[nodes[node].vtp].tc + self:removeNodeCost(node)
     if nodes[node].pre < 0 and nodes[node].suc < 0 then 

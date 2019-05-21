@@ -32,7 +32,6 @@ end
 function Neighbors(operator)   --领域使用迭代生成器，一个一个返回move
     return coroutine.wrap(function() operator() end)
 end  
-
 ---------------------------------node_relocate----------------------------------------------------------
 function node_relocate()
     for i=1,#nodes do
@@ -57,7 +56,7 @@ end
 ---------------------------------2-opt-star----------------------------------------------------------
 local function create2OptMove(pos1, pos2)
     if feasible:reverseSegment(nodes[pos1].suc, pos2) then
-        return TwoOptMove:new(delta_free + dis(pos1, pos2) + dis(nodes[pos1].suc, nodes[pos2].suc), pos1, pos2)
+        return TwoOptMove:new(dis(pos1, pos2) + dis(nodes[pos1].suc, nodes[pos2].suc) - dis(pos1, nodes[pos1].suc) - dis(pos2, nodes[pos2].suc), pos1, pos2)
     end
 end 
 
