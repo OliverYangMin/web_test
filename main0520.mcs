@@ -1,0 +1,39 @@
+local obj = io.popen('cd')
+local path = obj:read('*all'):sub(1, -2); obj:close()
+package.path = package.path .. ';' .. path.. '\\00Data\\?.lua;' .. path.. '\\01Class\\?.lua;' .. path.. '\\02Module\\?.lua'
+require 'Move'
+require 'Delta'
+require 'Feasible'
+require 'Node&Route&Solution'
+require 'BasicFunction'
+VRPIO = require 'VRPIO'   
+Constructives = require 'Constructives'
+Algorithms = require 'Algorithms'
+
+function main()
+    nodes, Dis, Time, vehicle = VRPIO.read_solomon('R101', 25)
+    math.randomseed(195)
+    local starttime = os.time()
+    
+    --require 'mobdebug'.off()
+    solution = Solution:new()
+    Constructives.ClarkWright(0, 0.8)
+    --require 'mobdebug'.on()
+    
+    solution:to_giantTour()
+    cDelta = Delta:new()
+    feasible = Feasible:new() 
+-------------------------Improvement Phase-------------------------------------------------------------------------------------------    
+    Algorithms.SteepestDescent(node_relocate)
+    Algorithms.SteepestDescent(node_swap)
+    Algorithms.SteepestDescent(two_opt_star) 
+--  local routes = Algorithms.SimulateAnnealing(node_relocate)
+
+    solution = to_solution()
+    solution:plot()
+    print('The algorithm`s total computation time=', os.time() - starttime)
+    print('The total cost of best tour plan = ', solution:getCost())
+    print('The number of vehicle be used: ', #solution)
+end 
+
+main()

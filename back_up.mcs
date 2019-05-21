@@ -9,7 +9,48 @@
 --FIGUREDISPLAY           = AddParameter(module_vrp, display_vrp, "check", "Is figure output?", true) 
 --FILEDISPLAY             = AddParameter(module_vrp, display_vrp, "check", "Is file output?", false)
 
-
+function plot()
+     if not Nodes then 
+        Nodes = CreateShapes('nodes [Points]','point') 
+        AddField(Nodes, 'id', 'int')
+        AddField(Nodes, 'ptype', 'int') -- dont do that:the color of attributes put at first place
+        AddField(Nodes, 'weight', 'float')
+        AddField(Nodes, 'volume', 'float')
+        AddField(Nodes, 'route', 'int')
+        for i=0,#nodes do
+            local shp = AddShape(Nodes, nodes[i].x, nodes[i].y) 
+            if i==1 then 
+                SetValue(shp, 1, 'ptype')
+            else
+                SetValue(shp, 2, 'ptype')
+            end 
+            SetValue(shp, i, 'id')
+            SetValue(shp, nodes[i].weight, 'weight')
+            SetValue(shp, nodes[i].weight, 'volume')
+        end
+        Update(Nodes)
+        SetParameter(Nodes, "COLORS_TYPE", 3)
+        SetParameter(Nodes, "LABEL_ATTRIB", 1)
+    end 
+    
+    local Routes = CreateShapes('Solution [Lines]','line')
+    AddField(Routes, 'id', 'int')
+    AddField(Routes, 'route_id', 'int')  --  dont do that: the color of attributes put at first place
+    local index, cPoint = 1, nodes[-1]
+    repeat 
+        if cPoint.suc>0 then 
+            local shp = AddShape(Routes, cPoint.x, cPoint.y, nodes[cPoint.suc].x,nodes[cPoint.suc].y)
+            SetValue(shp, index, 'id')
+            SetValue(shp, -cPoint.route, 'route_id')
+            index = index + 1
+        end 
+        cPoint = nodes[cPoint.suc]
+    until (cPoint.id==0 and cPoint.route==-1)
+    SetParameter(Routes, "COLORS_TYPE", 3)
+    Update(Nodes)
+    Update(Routes)
+    CreateView('vrp result cost: ' .. self:getCost(), Nodes, Routes)
+end 
 --routesNum = 3
 --SMD1_0 = {}
 --for i=1,#nodes do
