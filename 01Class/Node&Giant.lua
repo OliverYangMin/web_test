@@ -24,10 +24,40 @@ function Giant:getCost()
         if cPoint.pre < 0 and cPoint.id > 0 then cost = cost + vehicle[self[cPoint.pre].vtp].fc end 
         cPoint = self[cPoint.pre]
     until self[cPoint.pre].suc == -1 
---    cost = cost + dis(-1, self[-1].suc) * vehicle[self[-1].vtp].tc
---    distance = distance + dis(-1, self[-1].suc)
     return cost, distance
 end 
+
+function Giant:penaltyCost()
+    local alpha = {1,1,1,1}
+    local cPoint, cost = nodes[-1], 0, 0 
+    local W, V, T = 0, 0, 0
+    repeat 
+        cost = cost + dis(cPoint.pre, cPoint.id) * vehicle[self[cPoint.pre].vtp].tc + math.max(0, cPoint.time2 - cPoint.bT) * vehicle[self[cPoint.pre].vtp].wc
+        if cPoint.pre < 0 and cPoint.id > 0 then 
+            cost = cost + vehicle[cPoint.vtp].fc 
+            W = W + math.max(0, cPoint.fW - vehicle[cPoint.vtp].weight)
+            V = V + math.max(0, cPoint.fV - vehicle[cPoint.vtp].volume)
+        end 
+        cPoint = self[cPoint.pre]
+    until self[cPoint.pre].suc == -1 
+    
+    
+    
+    
+    return cost
+
+
+
+
+end 
+
+
+
+
+
+
+
+
 
 function Giant:to_solution()
     local function getRoute(index)

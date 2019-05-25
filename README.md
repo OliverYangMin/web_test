@@ -29,11 +29,7 @@ point : 节点的table，包含各种类型== nodes[i] = {x,y,id=i, bT,bW,bV,fT,
 
 
 
-
-
-
-
-
-
-[hhahh](https://github.com/OliverYangMin/Min_VRP-Solver/blob/master/README.md)
+# 0522
+1. penalty cost 
+2. Tabu search
 

@@ -45,7 +45,7 @@ end
 
 function read_solomon(filename, size)
     local inputf = assert(io.open('00Data/Solomon/' .. size .. '/' .. filename .. '.txt', 'r'))
-    local nodes, Dis, Time, vehicle = Giant:new(), {}, {}, {{volume = 0;fc = 0,tc = 1,wc = 0}}
+    local nodes, Dis, Time, vehicle = Giant:new(), {}, {}, {{volume = 1;fc = 0,tc = 1,wc = 0}}
     
     local i = 1
     for line in inputf:lines() do
@@ -66,7 +66,7 @@ function read_solomon(filename, size)
         Dis[i], Time[i] = {}, {}
         for j=0,#nodes do
             local x = math.sqrt((nodes[i].x - nodes[j].x)^2 + (nodes[i].y - nodes[j].y)^2 )
-            Dis[i][j] = i == j and false or x - x % 0.01
+            Dis[i][j] = i == j and false or x - x % 0.1
             Time[i][j] = Dis[i][j]
         end
     end 

@@ -9,6 +9,40 @@ function Route:new(vtp)
     return self
 end 
 
+function Route:contains(node)
+    for i=1,#self do
+        if self[i].id == node then 
+            return true
+        end 
+    end 
+    return false
+end 
+
+function Route:getBranchArc(cRoute)
+    if not self:intersects(cRoute) then error(110) end 
+    for i=1,#self do
+        for j=1,#cRoute do
+            if self[i].id == cRoute[j].id then 
+                local tail1, tail2 = i == #self and 0 or self[i+1].id, j==#cRoute and 0 or cRoute[j+1].id
+                if tail1 ~= tail2 then 
+                    return i, tail1
+                end 
+            end 
+        end
+    end 
+end 
+
+function Route:intersects(cRoute)
+    for i=1,#self do
+        for j=1,#cRoute do
+            if self[i].id == cRoute[j].id then
+                return true
+            end 
+        end 
+    end 
+    return false
+end 
+
 function Route:forward_mark(p)
     for i=p,#self do
         self[i].fT = push_forward(self[i-1], self[i].id)

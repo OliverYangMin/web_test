@@ -18,7 +18,7 @@ end
 --    until nodes[cPoint.pre].suc == -1 
 --    return cost
 --end 
-
+--  ddsd  --- ds d 
 
 
 
@@ -45,3 +45,11 @@ end
 function Delta:insertNodeCost(node, pos)
     return (dis(pos, node) + dis(node, nodes[pos].suc) - dis(pos, nodes[pos].suc)) * vehicle[nodes[pos].vtp].tc
 end 
+
+function Delta:penalty_insertNodeCost(node, pos)
+    --nodes[pos].fW + nodes[node].weight + nodes[nodes[pos].suc].bW - vehicle[]
+    return (dis(pos, node) + dis(node, nodes[pos].suc) - dis(pos, nodes[pos].suc)) * vehicle[nodes[pos].vtp].tc
+end
+
+
+

@@ -1,7 +1,3 @@
--- name: LocalSearch
--- purpose: includes all operators for solution neighbor
--- start date: 2019-04-16
--- authors: YangMin
 function Neighborhood(operator, strategy)
     strategy = strategy or math.huge
     local move = {delta=0}
@@ -54,6 +50,25 @@ function node_relocate()
         until j == -1 or j < nodes[nodes[-1].pre].route
     end 
 end 
+
+--function relax_node_relocate()
+--    for i=1,#nodes do
+--        local delta_free = cDelta:freeNodeCost(i)
+--        local j = -1 
+--        repeat 
+--            local sign 
+--            if j ~= i and j ~= nodes[i].pre and nodes[j].id ~= nodes[nodes[j].suc].id then
+--                if feasible:sameRoute(i, j) then 
+                    
+--                else
+--                    coroutine.yield(RelocateMove:new(delta_free + cDelta:insertNodeCost(i, j), i, j))
+--                end
+--            end 
+--            j = nodes[j].suc
+--        until j == -1 or j < nodes[nodes[-1].pre].route
+--    end 
+--end 
+
 ---------------------------------2-opt-star----------------------------------------------------------
 local function create2OptMove(pos1, pos2)
     if feasible:reverseSegment(nodes[pos1].suc, pos2) then

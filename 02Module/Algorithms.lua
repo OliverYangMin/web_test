@@ -3,7 +3,7 @@
 -- start date: 2019-04-11
 -- authors: YangMin
 module(..., package.seeall)
-require 'Neighborhood'
+require '02Module.Neighborhood'
 
 function SteepestDescent(operator, strategy)
     while true do
@@ -43,18 +43,15 @@ function SimulateAnnealing(operator, ...)
     return best_solution
 end   
 
---function TabuSearch()
---    init_tabu()
---end 
+
 
 function VariableNeighborhoodSearch(operators, max_iter)
-    
     local best_solution = nodes:to_solution()
     for i=1,max_iter do
         SetProgress(i, max_iter)
         RandomNeighbor(operators[math.random(#operators)]):execute()
         local index = 1
-        while index<=#operators do
+        while index <= #operators do
             local move = Neighborhood(operators[index])
             if move.delta < 0 then
                 move:execute()
@@ -100,18 +97,6 @@ local function updateTabu(cMove)
     
 end 
 
-function TabuSearch(neighbors)
-    while stopCriterion() do
-        local move = MultiNeighbors(neighbors)
-        if move.delta < 0 then 
-            giant:executeMove(move)
-            updateTabu(move)
-        end 
-        if giant:getCost() < best_solution.cost then
-            best_solution = giant:getRoutes()
-        end 
-    end 
-end 
 
 local function buildRCL(alpha, candi, cmax, cmin)
     local RCL
