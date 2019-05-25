@@ -54,14 +54,5 @@ function main()
     
     solution = Solution:new()
     Constructives.NearestInsertion(0.9, 0.05, 0.05)
-    
-    
-    
 end 
-
-
-
-
 main()
-
-

@@ -1,37 +1,27 @@
-local obj = io.popen('cd')
-local path = obj:read('*all'):sub(1, -2); obj:close()
-package.path = package.path .. ';' .. path.. '\\00Data\\?.lua;' .. path.. '\\01Class\\?.lua;' .. path.. '\\02Module\\?.lua'
-require 'Move'
-require 'Delta'
-require 'Feasible'
-require 'Node&Giant'
-require 'Route&Solution'
-require 'BasicFunction'
-VRPIO = require 'VRPIO'   
-Constructives = require 'Constructives'
-Algorithms = require 'Algorithms'
+
+require '01Class.Move'
+require '01Class.Delta'
+require '01Class.Feasible'
+require '01Class.Node&Giant'
+require '01Class.Route&Solution'
+require '02Module.BasicFunction'
+VRPIO = require '02Module.VRPIO'   
+Constructives = require '02Module.Constructives'
+Algorithms = require '02Module.Algorithms'
 
 function main()
    -- require 'mobdebug'.off()
-    nodes, Dis, Time, vehicle = VRPIO.read_solomon('R101', 100)
+    nodes, Dis, Time, vehicle = VRPIO.read_solomon('R101', 25)
     math.randomseed(195)
     local starttime = os.time()
-    
-    
     solution = Solution:new()
     Constructives.NearestInsertion(0.8, 0.1, 0.1)
-    
     
     solution:to_giantTour()
     cDelta = Delta:new()
     feasible = Feasible:new() 
 -------------------------Improvement Phase------------------------------------------------------------------------------------------- 
    -- require 'mobdebug'.on()
-    --Algorithms.SteepestDescent(node_relocate)
---    Algorithms.SteepestDescent(node_swap)
-     
-    --Algorithms.SteepestDescent(two_opt_star) 
---  local routes = Algorithms.SimulateAnnealing(node_relocate)
     solution = Algorithms.VariableNeighborhoodSearch({node_relocate, node_swap, two_opt_star}, 80)
     solution = nodes:to_solution()
     --solution:plot()
@@ -40,5 +30,4 @@ function main()
     print('The total cost of best tour plan = ', solution.cost)
     print('The number of vehicle be used: ', #solution)
 end 
-
 main()
