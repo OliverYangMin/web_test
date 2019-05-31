@@ -1,6 +1,12 @@
 # Min_VRP-Solver
 **A framework of algorithms for VRP with side constraints**
 
+# 工作日志 update log
+0531
+- 修正了wait time evaluation, needed to extends to Vidal WT test
+- branch  1.vehicle num 2. arc flow
+
+
 1. Constructive Heuristic Algorithms
     1. BackAndForth
     2. Solomon`s Nearest insertion
@@ -57,6 +63,5 @@ point : 节点的table，包含各种类型== nodes[i] = {x,y,id=i, bT,bW,bV,fT,
 
 
 
-# 工作日志 update log
 
 

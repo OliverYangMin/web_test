@@ -28,6 +28,8 @@ function Route:getBranchArc(cRoute)
                     end 
                 elseif self[i+1].id ~= cRoute[j+1].id then
                     return {self[i].id, self[i+1].id}
+                elseif self[i-1].id ~= cRoute[j-1].id then 
+                    return {self[i-1].id, self[i].id}
                 end 
             end 
         end

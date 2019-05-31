@@ -15,6 +15,7 @@ function solveSubproblem(cForbis)
         
         for i=1,#nodes do
             if not isForbidden(cForbis, label.id, i) and label.sign[i] < 1 then
+            --if not (label.id == 4 and i == 25) and label.sign[i] < 1 then 
                 local new_label = label:extend(i) 
                 if new_label and not new_label:isDominated() then 
                     for i=#unprocessed,1,-1 do

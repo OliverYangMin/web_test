@@ -8,6 +8,7 @@ function init()
     require '04CG.Subproblem'
     require '04CG.Master'
     require '04CG.Label'
+    require '04CG.Forbids'
     VRPIO = require '02Module.VRPIO'   
     Constructives = require '02Module.Constructives'
     Algorithms = require '02Module.Algorithms'
@@ -16,6 +17,7 @@ end
 init()
 UpBound = math.huge
 best_solution = {}
+
 function columnGeneration(cRoutes, cForbids, vNumberCons)
     require 'mobdebug'.off()
     local iter, master = 0
@@ -24,7 +26,20 @@ function columnGeneration(cRoutes, cForbids, vNumberCons)
         master = Master:new(cRoutes, cForbids, vNumberCons)
         if master:solve() ~= 0 then return nil end 
         master:setNodesDual()
+        local sum = #cRoutes
         cRoutes[#cRoutes+1], cRoutes[#cRoutes+2] = solveSubproblem(cForbids)
+        if vNumberCons then 
+            local dual = master:getDuals()
+            print(dual[#dual], ' ', dual[1])
+            if #cRoutes - sum == 1 then
+                cRoutes[#cRoutes].cost = cRoutes[#cRoutes].cost - dual[#dual] 
+            else
+                cRoutes[#cRoutes].cost, cRoutes[#cRoutes-1].cost = cRoutes[#cRoutes].cost - dual[#dual], cRoutes[#cRoutes-1].cost - dual[#dual]
+                if cRoutes[#cRoutes].cost < -0.01 then 
+                    table.remove(cRoutes)
+                end 
+            end 
+        end        
         print('the LP relax obj = ', master:getObj())
         print('The min reduced cost = ', cRoutes[#cRoutes].cost)
     until cRoutes[#cRoutes].cost > -0.01
@@ -48,8 +63,6 @@ function branchNode(cRoutes, cForbids, vNumberCons)
                     table.insert(sss, master.routes[i])
                 end 
             end 
-            
-            
             if vehcile_number % 1 > 0.0001  and (1 - vehcile_number % 1) > 0.0001 then 
                 master:solve(true)
                 UpBound = master:getObj() < UpBound and master:getObj() or UpBound
@@ -61,29 +74,25 @@ function branchNode(cRoutes, cForbids, vNumberCons)
                 master:solve(true)
                 UpBound = master:getObj() < UpBound and master:getObj() or UpBound
                 
-                cForbids:append(Forbid:new(arc, 1))
-                branchNode(master.routes, DeepCopy(cForbids), vNumberCons)
+                cForbids:append(Forbid:new(arc, 0))
+                branchNode(DeepCopy(master.routes), DeepCopy(cForbids), vNumberCons)
                 
-                cForbids[#cForbids].ok = 0
-                branchNode(master.routes, DeepCopy(cForbids), vNumberCons)
+                cForbids[#cForbids].ok = 1
+                branchNode(DeepCopy(master.routes), DeepCopy(cForbids), vNumberCons)
             end 
         end 
-          print(master:getObj())
-    print(master:getVarSum())
+        print(master:getObj())
+        print(master:getVarSum())
     end
-  
 end 
 
 
 function main()
     require 'mobdebug'.off()
-    nodes, Dis, Time, vehicle = VRPIO.read_solomon('R106', 25)
+    nodes, Dis, Time, vehicle = VRPIO.read_solomon('R111', 25)
     preprocessing()
     nodes[0].dual = 0
-    
     local starttime = os.time()
-    --master = columnGeneration(master.routes, Forbids:new(), {5, '<='})
-    
     branchNode(Constructives.getBackForth(), Forbids:new())
     require 'mobdebug'.on()
     print(os.time()-starttime)

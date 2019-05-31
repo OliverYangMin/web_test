@@ -10,7 +10,7 @@ local function resetCoeff(cSize, value)
 end 
 
 function Master:new(cRoutes, cForbids,cvNum)
-    local self = {obj = {}, routes = cForbids:filter(DeepCopy(cRoutes)), forbids = cForbids or {}}
+    local self = {obj = {}, routes = cForbids:filter(cRoutes), forbids = cForbids or {}}
     setmetatable(self, Master)
     self.lp = CreateLP()
     self:buildModel()
@@ -77,7 +77,7 @@ function Master:getMostFractional()
     if not self.result then self.result = self:getResult() end
     local max, max_value = 1, self.result[1]
     for i=2,#self.result do
-        if self.result[i] < 1 and self.result[i] > max_value then
+        if self.result[i] < 0.99999 and self.result[i] > max_value then
             max, max_value = i, self.result[i]
         end 
     end 
