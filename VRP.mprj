@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MICROCITY_PROJECT>
+  <DATA></DATA>
+  <MODULES>
+    <MODULE_LIB>
+      <FILE>main0515vrp.mcs</FILE>
+      <MODULE name="main">
+        <PARAMETERS name="main"/>
+      </MODULE>
+    </MODULE_LIB>
+  </MODULES>
+</MICROCITY_PROJECT>

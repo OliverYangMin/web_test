@@ -8,7 +8,7 @@ VRPIO = require '02Module.VRPIO'
 Constructives = require '02Module.Constructives'
 Algorithms = require '02Module.Algorithms'
 function init()
-    local matrix = VRPIO.read_txt('Instance/CWQ/70customers')
+    local matrix = VRPIO.read_txt('Instance/CWQ/100customers')
     nodes = Giant:new()
     for i=1,#matrix do
         nodes[matrix[i][1]] = Node:new(unpack(matrix[i]))
@@ -60,8 +60,8 @@ function main()
     --solution = Algorithms.VariableNeighborhoodSearch({node_swap, two_opt_star}, 80)
     --solution = Algorithms.SimulateAnnealing(node_relocate)
     Algorithms.SteepestDescent(node_relocate)
-    Algorithms.SteepestDescent(node_swap)
-    Algorithms.SteepestDescent(two_opt_star)
+    --Algorithms.SteepestDescent(node_swap)
+--    Algorithms.SteepestDescent(two_opt_star)
     solution = nodes:to_solution()
     solution:plot()
     solution:output()
