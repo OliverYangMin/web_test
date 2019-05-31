@@ -1,10 +1,9 @@
 Route = {vtp = 1}
 Route.__index = Route
 
-function Route:new(vtp)
-    local self = {}
+function Route:new(vtp, cost)
+    local self = {vtp = vtp or 1, cost = cost}
     setmetatable(self, Route)
-    self.vtp = vtp or 1
     self[0] = {id=0, fT = nodes[0].time1, bT=nodes[0].time2, fW = 0, fV = 0, bW=0, bV=0} 
     return self
 end 
@@ -23,9 +22,12 @@ function Route:getBranchArc(cRoute)
     for i=1,#self do
         for j=1,#cRoute do
             if self[i].id == cRoute[j].id then 
-                local tail1, tail2 = i == #self and 0 or self[i+1].id, j==#cRoute and 0 or cRoute[j+1].id
-                if tail1 ~= tail2 then 
-                    return i, tail1
+                if i == #self or j == #cRoute then
+                    if self[i-1].id ~= cRoute[j-1].id then 
+                        return {self[i-1].id, self[i].id}
+                    end 
+                elseif self[i+1].id ~= cRoute[j+1].id then
+                    return {self[i].id, self[i+1].id}
                 end 
             end 
         end
@@ -70,7 +72,7 @@ function Route:push_back(node_id)
 end 
 
 function Route:append(point)
-    self[#self+1] = point
+    self[#self+1] = DeepCopy(point)
 end 
 
 function Route:push_back_seq(seq)
@@ -89,7 +91,7 @@ end
 function Route:getCost()
     local cost = vehicle[self.vtp].fc
     for i=1,#self do
-        cost = cost + dis(self[i-1].id, self[i].id) * vehicle[self.vtp].tc + math.max(0, nodes[self[i].id].time2 - self[i].bT) * vehicle[self.vtp].wc
+        cost = cost + dis(self[i-1].id, self[i].id) * vehicle[self.vtp].tc + math.max(0, nodes[self[i].id].time1 - self[i].bT) * vehicle[self.vtp].wc
     end
     return cost + dis(self[#self].id, 0) * vehicle[self.vtp].tc
 end 
@@ -141,7 +143,7 @@ function Solution:to_giantTour()
     nodes[-1].pre = self[#self][#self[#self]].id
 end 
 
-function Solution:appendRoute(route)
+function Solution:append(route)
     table.insert(self, route)
 end 
 
@@ -155,24 +157,34 @@ function Solution:getCost()
 end 
 
 function Solution:output()
-    io.output('Result.csv')
-    io.write('trans_code, dist_seq, distacne\n')
-    for i=1,#self.routes do
-        io.write(string.format('DP%04d,', i))
-        --local totalDistance = 0
-        for j=1,#self.routes[i] do
-            if j<#self.routes[i] then
-                io.write(string.format('%d;', self.routes[i][j].id))
-                --totalDistance = totalDistance + dis[self[i][j].id][self[i][j+1].id]
-            else 
-                io.write(string.format('%d,', self.routes[i][j].id))
-            end
+    io.output(#solution .. '+'.. solution:getCost() .. 'Result.csv')
+    io.write('trans_code   ,  vehicle type , visit count , total weight, loading wegiht, total volume,  loading volume,  origin, customer id-arrival time\n')
+    for i=1,#self do
+        io.write(string.format('DP%04d, %d, %d', i, self[i].vtp, #self[i]))
+        --io.write(string.format(',%d', vehicles[self[i].vtp].weight))
+        io.write(string.format(',%f', self[i][1].bW))
+--        io.write(string.format(',%d', vehicles[self[i].v_type].volume))
+--        io.write(string.format(',%f', self[i][1].bV))
+        --local totalDistance = 0        
+        for j=0,#self[i] do
+            --io.write(string.format(',%d-%02d:%02d', self[i][j].id, math.floor(self[i][j].bT/60), self[i][j].bT%60))
+            io.write(string.format(',%d-%d', self[i][j].id, self[i][j].bT))
         end
-        --io.write(string.format('%f,', totalDistance))
         io.write('\n')
+--        io.write(string.format('time window, , , ,  %f%%, , %f%%,', self[i][1].bW/vehicles[self[i].v_type].weight*100, self[i][1].bV/vehicles[self[i].v_type].volume*100))    
+--        for j=0,#self[i] do
+--            if j<#self[i] then
+--                io.write(string.format('%02d:%02d-%02d:%02d,', math.floor(nodes[self[i][j].id].time1/60),nodes[self[i][j].id].time1%60, math.floor(nodes[self[i][j].id].time2/60), nodes[self[i][j].id].time2%60))
+--            else 
+--                io.write(string.format('%02d:%02d-%02d:%02d', math.floor(nodes[self[i][j].id].time1/60),nodes[self[i][j].id].time1%60, math.floor(nodes[self[i][j].id].time2/60), nodes[self[i][j].id].time2%60))
+--            end
+--        end
+--        io.write('\n')
     end
+    
     io.close()
 end 
+
 
 function Solution:plot()
     if not Nodes then 
@@ -218,5 +230,5 @@ function Solution:plot()
     end 
     SetParameter(Routes, "COLORS_TYPE", 3)
     Update(Routes)
-    CreateView('vrp result cost: ' .. self.cost, Nodes, Routes)
+    CreateView('vrp result cost: ' .. self:getCost(), Nodes, Routes)
 end

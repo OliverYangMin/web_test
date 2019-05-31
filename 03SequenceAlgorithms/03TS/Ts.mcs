@@ -1,0 +1,135 @@
+
+
+
+function TabuNeighborhood(operator)
+    local move = {delta = math.huge}
+    for new_move in Neighbors(operator) do
+        if new_move then
+            if new_move.delta < 0 or Tabu[move.i][-nodes[move.j].route] <= iter then 
+                if new_move.delta < move.delta then
+                    move = new_move
+                end
+            end
+        end 
+    end  
+    return move
+    --operator()
+end 
+
+
+
+
+
+
+
+
+
+
+
+function TabuSearch(neighbors)
+    local Tabu, TabuCreate = {}, {}
+    for i=1,#nodes do
+        Tabu[i], TabuCreate[i] = {}, {}
+        for j=1,nodes:getRouteNum() do
+            Tabu[i][j] = 0
+        end 
+    end 
+    iter = 0
+    while iter < max_iter do
+        iter = iter + 1
+        local move = TabuNeighborhood(operator)
+        move:execute()
+        
+        updateTabu(move)
+         
+        if feasible:giantTour() and nodes:getCost() < best_solution.cost then
+            best_solution = nodes:to_solution()
+        end 
+    end 
+end 
+
+
+
+
+
+
+
+
+
+
+
+
+
+local max_iter = 100
+
+function TabuSearch(operator)
+    alpha, beta, gamma = 1, 1, 1
+    best_solution = convert2Routes()
+    
+    
+
+    for iter=1,max_iter do
+        local move = TabuNeighbor(operator)
+        if move.feaislbe and move.delta < 0 then
+            best_solution = convert2Routes()
+        end 
+        
+        if feasible:overall() then
+            alpha = alpha * (1 + delta)
+        else
+            alpha = alpha / (1 + delta)ui
+        
+        end 
+        
+        
+        
+        TabuList[i][j] = iter
+        if move.delta < o then
+            move:execute()
+            delta:update()
+        end 
+        if giant.cost < best.cost then
+            giant = DeepCopy(nodes)
+        end 
+    end 
+    post_optimization()
+end
+
+
+
+-----
+-- neighborhood structures
+-- node relocate
+
+-----
+-- short term memory
+--- reverse moves     tabu tenure theta
+--- aspiration criterion
+
+
+
+
+
+-- long term memory
+--- to diversify the search, most TS implementations penalize frequently performed moves.
+
+
+-- intensification
+--- Periodic route improvements by means of TSP algorithms may be classified as intersification techniques
+--- Adaptive Memory 
+
+-- TABL
+
+
+
+
+
+
+
+
+
+
+
+
+
+

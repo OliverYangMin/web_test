@@ -1,0 +1,61 @@
+---Parameters
+---1 Initial Temperature: T
+---2 Stopping Criterion 
+---3 Annealing Schedule
+---4 Random Transformation
+---5 Cooling Rate: alpha
+---routes cRoutes Routes
+
+
+
+css.nearest_neighbor()
+
+
+local function RandomTransformation(cRoutes)
+    --relocate    
+    Relocate_Move
+    --exchange
+    
+    --2-opt
+    
+end 
+
+function SA(max_iter, alpha)
+    alpha = alpha or 0.999
+    local cSolu = DeepCopy(solution)
+    local T = cSolu.getCost() * 10
+    local iteration = 0
+    while iteration < max_iter and T > 1 do
+        local solu = RandomTransformation(cSolu.routes)
+        local delta = solu.cost - cSolu.cost 
+        if delta<0 or math.exp(-delta/T)<math.random() then
+            cSolu = DeepCopy(solu)
+        end 
+        if cSolu.cost<routes.cost then
+            routes = DeepCopy(cSolu)
+        end 
+        T = T * alpha
+        iteration = iteration + 1
+    end
+end 
+
+---temperature:1 T >> delta, to make sure math.exp(-delta/T)<1    2 100 times
+---factor alpha: 0.999 
+---max_iter:
+---RandomTransformation: 2-opt-star swap
+---initial solution: should not be good, because high temperatures with unmake it
+function RRT(max_iter, deviation)
+    local cRoutes = DeepCopy(routes)
+    local iteration = 0
+    while iteration<max_iter do
+        local rRoutes = RandomTransformation(cRoutes)
+        local delta = rRoutes.cost - cRoutes.cost 
+        if delta<0 or delta<routes.cost*deviation then
+            cRoutes = DeepCopy(rRoutes)
+        end 
+        if cRoutes.cost<routes.cost then
+            routes = DeepCopy(cRoutes)
+        end
+        iteration = iteration + 1
+    end
+end 

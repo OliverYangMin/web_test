@@ -1,7 +1,6 @@
 Delta = {}
 Delta.__index = Delta
 
-
 function Delta:new()
     local self = {}
     setmetatable(self, Delta)
@@ -18,9 +17,6 @@ end
 --    until nodes[cPoint.pre].suc == -1 
 --    return cost
 --end 
---  ddsd  --- ds d 
-
-
 
 function Delta:freeNodeCost(node)
     local cost =  dis(nodes[node].pre, nodes[node].suc)  * vehicle[nodes[node].vtp].tc + self:removeNodeCost(node)
@@ -31,7 +27,7 @@ function Delta:freeNodeCost(node)
 end 
 
 function Delta:removeNodeCost(node)
-    return - dis(nodes[node].pre, node) - dis(node, nodes[node].suc) * vehicle[nodes[node].vtp].tc
+    return (- dis(nodes[node].pre, node) - dis(node, nodes[node].suc)) * vehicle[nodes[node].vtp].tc
 end 
 
 function Delta:replaceCost(node1, node2)
@@ -50,6 +46,3 @@ function Delta:penalty_insertNodeCost(node, pos)
     --nodes[pos].fW + nodes[node].weight + nodes[nodes[pos].suc].bW - vehicle[]
     return (dis(pos, node) + dis(node, nodes[pos].suc) - dis(pos, nodes[pos].suc)) * vehicle[nodes[pos].vtp].tc
 end
-
-
-

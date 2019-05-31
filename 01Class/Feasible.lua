@@ -71,7 +71,6 @@ function Feasible:reverseSegment(node1, node2)  --只有前后顺序发生改变
     return push_forward(nodes[node], nodes[node2].suc, fT) <= nodes[nodes[node2].suc].bT
 end 
 
-
 function Feasible:concateTwoSegments(node1, node2)
     if not self:weight_volume(nodes[node1], nodes[node2]) then
         return false --'capacity_violation'

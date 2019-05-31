@@ -1,30 +1,19 @@
-local function ModuleInit()
-    local obj = io.popen('cd')
-    local path = obj:read('*all'):sub(1, -2)
-    obj:close()
-    package.path = package.path .. ';' .. path.. '\\00Data\\?.lua;' .. path.. '\\01Class\\?.lua;' .. path.. '\\02Module\\?.lua'
-    
-    require 'Solution'
-    require 'Route'
-    require 'GiantTour'
-    require 'BasicFunction'
-    
-    VRPIO = require 'VRPIO'    --set nodes 
-    Constructives = require 'Constructives'
-    Algorithms = require 'Algorithms'
---    Preprocessing = require 'Preprocessing'
-end 
-
-function main()
-    --require 'mobdebug'.off()
-    ModuleInit()
-    local matrix = VRPIO.read_txt('customers')
-    nodes = {}
+require '01Class.Move'
+require '01Class.Delta'
+require '01Class.Feasible'
+require '01Class.Node&Giant'
+require '01Class.Route&Solution'
+require '02Module.BasicFunction'
+VRPIO = require '02Module.VRPIO'   
+Constructives = require '02Module.Constructives'
+Algorithms = require '02Module.Algorithms'
+function init()
+    local matrix = VRPIO.read_txt('Instance/CWQ/70customers')
+    nodes = Giant:new()
     for i=1,#matrix do
-        local node = {weight = matrix[1], volume = 0, time = matrix[2], time1 = matrix[5], time2 = matrix[6]}
-        nodes[#nodes] = node
+        nodes[matrix[i][1]] = Node:new(unpack(matrix[i]))
     end
-    matrix = VRPIO.read_txt('distance', 1)
+    matrix = VRPIO.read_txt('Instance/CWQ/distance', 1)
     Dis = {}
     for i=1,#matrix do
         Dis[i-1] = {}
@@ -37,7 +26,7 @@ function main()
             Dis[i][j] = Dis[j][i]
         end 
     end 
-    matrix = VRPIO.read_txt('travel_time', 1)
+    matrix = VRPIO.read_txt('Instance/CWQ/travel_time', 1)
     Time = {}
     for i=1,#matrix do
         Time[i-1] = {}
@@ -50,9 +39,40 @@ function main()
             Time[i][j] = Time[j][i]
         end 
     end 
-    vehicle = {{weight=7, volume=0,fc=50, tc=0.002,wt=0.5}}
-    
+    vehicle = {{weight=7, volume=0,fc=50, tc=0.002, wc=0.05}}
+end 
+
+function main()
+    --require 'mobdebug'.off()
+    --nodes, Dis, Time, vehicle = VRPIO.read_solomon('R101', 25)
+    init()
+    math.randomseed(195)
+    local starttime = os.time()
     solution = Solution:new()
     Constructives.NearestInsertion(0.9, 0.05, 0.05)
+    solution:plot()
+    solution:to_giantTour()
+    cDelta = Delta:new()
+    feasible = Feasible:new() 
+    
+-------------------------Improvement Phase------------------------------------------------------------------------------------------- 
+    --require 'mobdebug'.on()
+    --solution = Algorithms.VariableNeighborhoodSearch({node_swap, two_opt_star}, 80)
+    --solution = Algorithms.SimulateAnnealing(node_relocate)
+    Algorithms.SteepestDescent(node_relocate)
+    Algorithms.SteepestDescent(node_swap)
+    Algorithms.SteepestDescent(two_opt_star)
+    solution = nodes:to_solution()
+    solution:plot()
+    solution:output()
+--    io.output('records.txt')
+--    for i=1,#records do
+--        io.write(records[i],'\n')
+--    end 
+--    io.close()
+    --require 'mobdebug'.on()
+    print('The algorithm`s total computation time = ', os.time() - starttime)
+    print('The total cost of best tour plan = ', solution:getCost())
+    print('The number of vehicle be used: ', #solution)
 end 
 main()

@@ -18,32 +18,32 @@ end
 
 function SimulateAnnealing(operator, ...)
     local function SAaccept(move, temp)
-        return move.delta < 0 or math.exp(-move.delta / temp) > math.random()
+        return move.delta < 0 or math.exp(- move.delta / temp / 10) > math.random()
     end 
     local paras = {...}
     local alpha = paras[1] or 0.98 --退火系数
     local Len = paras[2] or 100    --每个温度时的迭代次数，即链长
-    local T = cDelta:giantTour()      --初始温度
+    local T = 100 --nodes:getCost()      --初始温度
     local best_solution = nodes:to_solution()
     local count = 0
-    while T > 10 do
+    while T > 1 do
         for i=1,Len do
             local move = RandomNeighbor(operator)
             if SAaccept(move, T) then
                 move:execute()
-            end 
-            if cDelta:giantTour() < best_solution.cost then
-                best_solution = nodes:to_solution()
+                   
+                if nodes:getCost() < best_solution:getCost() then
+                 
+                    best_solution = nodes:to_solution()
+                end
             end
         end 
         T = T * alpha
         count = count + 1
-        print('Current Temperature = ',T)
+        --print('Current Temperature = ',T)
     end
     return best_solution
 end   
-
-
 
 function VariableNeighborhoodSearch(operators, max_iter)
     local best_solution = nodes:to_solution()
@@ -68,7 +68,6 @@ function VariableNeighborhoodSearch(operators, max_iter)
     return best_solution
 end 
 
-
 local function greedyAccept(cMove)
     return cMove.delta<0 
 end 
@@ -85,9 +84,6 @@ function IteratedLocalSearch(random_move, operator)
     end 
 end 
 
-
-
-
 local function stopCriterion()
     
 
@@ -96,7 +92,6 @@ end
 local function updateTabu(cMove)
     
 end 
-
 
 local function buildRCL(alpha, candi, cmax, cmin)
     local RCL
@@ -134,8 +129,6 @@ function GRASP(max_iterations, operator, seed)
         end 
     end
 end 
-
-
 
 --local function tryInsertNode(node, route_index)
 --    for i=#solution,1,-1 do

@@ -44,7 +44,7 @@ end
 
 
 function read_solomon(filename, size)
-    local inputf = assert(io.open('00Data/Solomon/' .. size .. '/' .. filename .. '.txt', 'r'))
+    local inputf = assert(io.open('00Data/Solomon/' .. filename .. '.txt', 'r'))
     local nodes, Dis, Time, vehicle = Giant:new(), {}, {}, {{volume = 1;fc = 0,tc = 1,wc = 0}}
     
     local i = 1
@@ -60,6 +60,7 @@ function read_solomon(filename, size)
             vehicle[1].weight = tonumber(string.match(line, "[0-9%.]+$"))
         end
         i = i + 1
+        if #nodes == size then break end 
     end
     inputf:close()
     for i=0,#nodes do

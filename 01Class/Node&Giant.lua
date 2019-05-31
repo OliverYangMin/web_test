@@ -24,7 +24,7 @@ function Giant:getCost()
         if cPoint.pre < 0 and cPoint.id > 0 then cost = cost + vehicle[self[cPoint.pre].vtp].fc end 
         cPoint = self[cPoint.pre]
     until self[cPoint.pre].suc == -1 
-    return cost, distance
+    return cost--, distance
 end 
 
 function Giant:penaltyCost()
@@ -40,24 +40,8 @@ function Giant:penaltyCost()
         end 
         cPoint = self[cPoint.pre]
     until self[cPoint.pre].suc == -1 
-    
-    
-    
-    
     return cost
-
-
-
-
 end 
-
-
-
-
-
-
-
-
 
 function Giant:to_solution()
     local function getRoute(index)
@@ -73,7 +57,7 @@ function Giant:to_solution()
     local solu = Solution:new(cost)
     local i = -1 
     while self[i] do
-        solu:appendRoute(getRoute(i))
+        solu:append(getRoute(i))
         i = i - 1 
     end 
     return solu

@@ -1,4 +1,3 @@
-
 require '01Class.Move'
 require '01Class.Delta'
 require '01Class.Feasible'
@@ -11,23 +10,26 @@ Algorithms = require '02Module.Algorithms'
 
 function main()
    -- require 'mobdebug'.off()
-    nodes, Dis, Time, vehicle = VRPIO.read_solomon('R101', 25)
+    nodes, Dis, Time, vehicle = VRPIO.read_solomon('R101', 100)
     math.randomseed(195)
     local starttime = os.time()
     solution = Solution:new()
-    Constructives.NearestInsertion(0.8, 0.1, 0.1)
-    
+    Constructives.NearestInsertion(0.9, 0.05, 0.05)
+    solution:plot()
     solution:to_giantTour()
     cDelta = Delta:new()
     feasible = Feasible:new() 
+    
 -------------------------Improvement Phase------------------------------------------------------------------------------------------- 
    -- require 'mobdebug'.on()
-    solution = Algorithms.VariableNeighborhoodSearch({node_relocate, node_swap, two_opt_star}, 80)
-    solution = nodes:to_solution()
+    --solution = Algorithms.VariableNeighborhoodSearch({node_relocate, node_swap, two_opt_star}, 80)
+    --solution, records = SimulateAnnealing(node_relocate)
+    
+    --solution = nodes:to_solution()
     --solution:plot()
     --require 'mobdebug'.on()
     print('The algorithm`s total computation time = ', os.time() - starttime)
-    print('The total cost of best tour plan = ', solution.cost)
+    print('The total cost of best tour plan = ', solution:getCost())
     print('The number of vehicle be used: ', #solution)
 end 
 main()

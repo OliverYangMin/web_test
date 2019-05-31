@@ -9,12 +9,20 @@ function back_forth()
     for i=1,#nodes do
         local route = Route:new(1)
         route:push_back(i)
-        solution:appendRoute(route)
+        solution:append(route)
     end 
 end 
+
+function getBackForth()
+    local routes = {}
+    for i=1,#nodes do
+        local route = Route:new(1)
+        route:push_back(i)
+        routes[#routes+1] = route
+    end 
+    return routes 
+end 
 --------------------------------------------------------------------------------
-
-
 function ClarkWright(seq_para, mu)
     local savings = {}
     back_forth()
@@ -144,7 +152,7 @@ function NearestInsertion(...)
         if next_node then 
             route:push_back(next_node)
         else
-            solution:appendRoute(route)
+            solution:append(route)
             route = Route:new(nil)
             local node = NearestUnroutedNode()
             if node then 
@@ -155,7 +163,7 @@ function NearestInsertion(...)
         end 
     end  
     if #route>0 then
-        solution:appendRoute(route)
+        solution:append(route)
     end 
     beta, unrouted, route = nil, nil, nil
 end  

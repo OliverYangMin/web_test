@@ -72,14 +72,14 @@ end
 ---------------------------------2-opt-star----------------------------------------------------------
 local function create2OptMove(pos1, pos2)
     if feasible:reverseSegment(nodes[pos1].suc, pos2) then
-        return TwoOptMove:new(dis(pos1, pos2) + dis(nodes[pos1].suc, nodes[pos2].suc) - dis(pos1, nodes[pos1].suc) - dis(pos2, nodes[pos2].suc), pos1, pos2)
+        return TwoOptMove:new((dis(pos1, pos2) + dis(nodes[pos1].suc, nodes[pos2].suc) - dis(pos1, nodes[pos1].suc) - dis(pos2, nodes[pos2].suc)) * vehicle[nodes[pos1].vtp].tc, pos1, pos2)
     end
 end 
 
 local function create2OptStarMove(pos1, pos2)
     if feasible:concateTwoSegments(pos1, nodes[pos2].suc) then
         local vehicle_fc = ((pos2 < 0 and nodes[pos1].suc < 0) or  (pos1 < 0 and nodes[pos2].suc < 0)) and vehicle[nodes[pos2].vtp].fc or 0
-        return TwoOptStarMove:new(vehicle_fc + dis(pos1, nodes[pos2].suc) + dis(pos2, nodes[pos1].suc) - dis(pos1, nodes[pos1].suc) - dis(pos2, nodes[pos2].suc), pos1, pos2)
+        return TwoOptStarMove:new(vehicle_fc + (dis(pos1, nodes[pos2].suc) - dis(pos1, nodes[pos1].suc)) * vehicle[nodes[pos1].vtp].tc  + (dis(pos2, nodes[pos1].suc) - dis(pos2, nodes[pos2].suc)) * vehicle[nodes[pos2].vtp].tc, pos1, pos2)
     end 
 end 
 

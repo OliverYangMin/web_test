@@ -10,6 +10,58 @@ function time(i, j)
     return Time[i][j]
 end 
 
+function preprocessing()
+    for i=1,#nodes do
+        nodes[i].time2 = math.min(nodes[0].time2 - time(i, 0), nodes[i].time2)
+    end 
+    repeat
+        local change 
+        for i=1,#nodes do
+            local min = math.huge
+            for j=0,#nodes do
+                if i~=j then 
+                    min = math.min(min, nodes[j].time1 + nodes[j].stime + time(j, i))
+                end 
+            end
+            change = nodes[i].time1 < math.min(nodes[i].time2, min)
+            nodes[i].time1 = math.max(nodes[i].time1, math.min(nodes[i].time2, min))
+        end 
+        
+        for i=1,#nodes do
+            local min = math.huge
+            for j=0,#nodes do 
+                if i~=j then
+                    min = math.min(min, nodes[j].time1 - nodes[i].stime - time(i, j))
+                end 
+            end 
+            change = nodes[i].time1 < math.min(nodes[i].time2, min)
+            nodes[i].time1 = math.max(nodes[i].time1, math.min(nodes[i].time2, min))
+        end 
+        
+        for i=1,#nodes do
+            local max = 0
+            for j=0,#nodes do
+                if i~=j then 
+                    max = math.max(max, nodes[j].time2 + nodes[j].stime + time(j, i))
+                end 
+            end 
+            change = nodes[i].time2 > math.max(nodes[i].time1, max)
+            nodes[i].time2 = math.min(nodes[i].time2, math.max(nodes[i].time1, max))
+        end 
+        
+        for i=1,#nodes do
+            local max = 0 
+            for j=0,#nodes do
+                if i~=j then 
+                    max = math.max(max, nodes[j].time2 - nodes[i].stime + time(i, j))
+                end 
+            end
+            change = nodes[i].time2 > math.max(nodes[i].time1, max)
+            nodes[i].time2 = math.min(nodes[i].time2, math.max(nodes[i].time1, max))
+        end   
+    until not change
+end 
+
 function DeepCopy(object)      
     local SearchTable = {}  
     local function Func(object)  
