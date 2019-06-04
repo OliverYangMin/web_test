@@ -5,8 +5,30 @@
 0531
 - 修正了wait time evaluation, needed to extends to Vidal WT test
 - branch  1.vehicle num 2. arc flow
+- the sources of duals:  dual cost should be subtracted   减去
+    1. each node has a negative cost as reward for vehicle who visit it 
+    2. the fixed cost for vehicle, if <= then positive, else negative, represent the cost for a type of vehicle
+    3. if there are more than one type of vehicle, for each type of vehicle have a specific cost 
+    4. for some cut, will generate a cost in arc 
+0601
+- refactor whole program, create class BranchNode to contain branching decision and brancing, column generation get LP opimize result, and solve subproblem to get new route
+- solomon benchmarks test:
+    1. got best         directly: R101-25, R103-25, R104-25, R105-25, R107-25, R108-25, R109-25,
+    2. one vehicle number branch: R102-25
+    3. many arc flow branch     : R106-25
+0602
+- there are 106,108,110,111 and 112 -25 have no result
+- arc flow branch is ok, but it needs to many branch nodes
 
+0603
+- some trival details
 
+0604
+- need to change the weight and volume, fW,fV,bW,bV to be W,V
+- dis --- no need for bidirectly forward 
+
+ 
+ 
 1. Constructive Heuristic Algorithms
     1. BackAndForth
     2. Solomon`s Nearest insertion

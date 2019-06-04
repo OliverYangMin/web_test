@@ -168,6 +168,30 @@ function NearestInsertion(...)
     beta, unrouted, route = nil, nil, nil
 end  
 --------------------------------------------------------------------------------
+--function Insertion1()
+--    unrouted, routes = {}, {Route:new()}
+--    for i=1,#nodes do unrouted[#unrouted+1] = i end 
+--    while #unrouted > 0 do
+--        local min = {cost = math.huge, node = 0, route = 0, pos = 0}
+--        for i=1,#unrouted do
+--            for j=1,#routes do
+--                for k=0,#routes[j] do
+--                    if feasible:insert() then
+--                        local cost = cDelta:insert(j,p,unrouted[i])
+--                        if cost < min.cost then
+--                            min = {cost = cost, node = i, route = , pos = }
+--                        end 
+--                    end 
+--                end 
+--            end 
+--        end
+--        routes[min.route]:insert(pos, unrouted[min.node])
+--        table.remove(unrouted, min.node)
+--    end 
+--    return routes 
+--end 
+
+
 --local function criteria(cRoute, node, p)
 --    local c11,c12 = dis(cRoute[p].id, node) + dis(node, cRoute[p+1].id) - mu * dis(cRoute[p].id, cRoute[p+1].id)
 --    local fT = push_forward(cRoute[p], node)

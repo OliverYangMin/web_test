@@ -15,10 +15,12 @@ end
 
 function Label:extend(node)
     local tag = Label:new({unpack(self)})
+    
     tag[#tag+1], tag.id = node, node
     tag.cost = self.cost + dis(self.id, node) - nodes[node].dual   -- vehicle type 
     tag.time = math.max(self.time + nodes[self.id].stime + time(self.id, node), nodes[node].time1)
     tag.weight, tag.volume = self.weight + nodes[node].weight, self.volume + nodes[node].volume
+    
     if tag.weight <= 200 and tag.volume <= 1 and tag.time <= nodes[node].time2 then 
         tag.sign = {}
         for i=1,#nodes do
@@ -29,13 +31,7 @@ function Label:extend(node)
                 tag.sign[i] = math.max(self.sign[i], sign)
                 if sign == 0 then tag.active = true end 
             end 
-        end     
---        if node == 25 then
---            tag.sign[4] = 1
---        end 
---        if tag[#tag-1] == 4 then
---            tag.sign[25] = 1
---        end 
+        end    
         return tag
     end 
 end 
@@ -49,7 +45,7 @@ function Label:isDominatedBy(label)
     return not(self.cost < label.cost or self.weight < label.weight or self.volume < label.volume or self.time < label.time)
 end 
 
-function Label:isDominated()
+function Label:isDominated()  --可使用 hashmap
     for i=1,#unprocessed do
         if self.id == unprocessed[i].id and self:isDominatedBy(unprocessed[i]) then
             return true
@@ -69,4 +65,3 @@ function Label:to_route()
     end 
     return route
 end 
-
