@@ -81,10 +81,10 @@ function Master:getMostFractional()
     local choice = {}
     for i=1,#self.result do
         if self.result[i] < 0.99999 and self.result[i] > 0.0001 then
-            table.insert(choice, {self.result[i], id = i})
+            table.insert(choice, {math.abs(0.5 - self.result[i]), id = i})
         end 
     end 
-    table.sort(choice, function(a,b) return a[1]>b[1] end)
+    table.sort(choice, function(a,b) return a[1] < b[1] end)
     return choice
 end
 
@@ -121,14 +121,14 @@ end
 function Master:to_solution()
     local solu = Solution:new()
     for i, ir in ipairs{GetVariables(self.lp)} do
-        if math.abs(1 - ir) < 0.001 then
+        if ir > 0.001 then
             solu:append(self.routes[i])
         end 
     end 
     return solu
 end 
 
-function Master:solveSubproblem() -- car type   vtp   carDuals[vtp]   vehicle[vtp].tc,fc,weight,volume
+function Master:solveSubproblem() 
     unprocessed, useful = {Label:new({}, true)}, {}
     repeat
         local label = unprocessed[#unprocessed]
@@ -157,10 +157,7 @@ function Master:solveSubproblem() -- car type   vtp   carDuals[vtp]   vehicle[vt
             end
             ::continue::
         end
-    until #unprocessed == 0
-    
-    --print('there are ', #useful, ' labels in useful')
-    
+    until #unprocessed == 0    
     --local negative_routes = {}
     for i=2,#useful do 
         useful[i].cost = useful[i].cost + dis(useful[i].id, 0) - self.carDual

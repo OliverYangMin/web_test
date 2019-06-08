@@ -22,21 +22,16 @@ function Forbid:isForbidden(cRoute)
             end 
         end     
     else
-        local sign1, sign2
-        
         for i=0,#cRoute do
             if cRoute[i].id == self.arc[1] then 
-                sign1 = i
+                return not (cRoute[i+1] and cRoute[i+1].id == self.arc[2])
             end
         end 
-        
-        if sign1 then 
-            for i=1,#cRoute do
-                if cRoute[i].id == self.arc[2] then
-                    sign2 = i
-                end 
+
+        for i=1,#cRoute do
+            if cRoute[i].id == self.arc[2] then
+                return true           
             end 
-            return sign2 and not (sign2 - sign1 == 1)
         end 
     end     
 end
@@ -47,18 +42,14 @@ function Forbid:forbid(cLabel)
             cLabel.sign[self.arc[2]] = 1
         end 
     else
-        for i=1,#cLabel-1 do
-            if cLabel[i] == self.arc[1] then
-                cLabel.sign[self.arc[2]] = 1
-                return 
-            end
-        end 
-        
-        for i=1,#cLabel do
-            if cLabel[i] == self.arc[2] then
-                cLabel.sign[self.arc[1]] = 1
-                return
+        if cLabel.id == self.arc[1] then
+            for i=1,#nodes do
+                if i ~= self.arc[2] then
+                    cLabel.sign[i] = 1 
+                end 
             end 
+        else
+            cLabel.sign[self.arc[2]] = 1
         end  
     end 
 end 

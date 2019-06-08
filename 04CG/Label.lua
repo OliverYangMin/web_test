@@ -36,13 +36,15 @@ function Label:extend(node)
     end 
 end 
 
+
+
 function Label:isDominatedBy(label)
     for i=1,#nodes do
         if self.sign[i] < label.sign[i] then
             return false
         end 
     end 
-    return not(self.cost < label.cost or self.weight < label.weight or self.volume < label.volume or self.time < label.time)
+    return not (self.cost < label.cost or self.weight < label.weight or self.volume < label.volume or self.time < label.time)
 end 
 
 function Label:isDominated()  --可使用 hashmap
@@ -64,4 +66,8 @@ function Label:to_route()
         route:push_back(self[i])
     end 
     return route
+end 
+
+function override()
+
 end 

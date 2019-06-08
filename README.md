@@ -15,7 +15,7 @@
 - solomon benchmarks test:
     1. got best         directly: R101-25, R103-25, R104-25, R105-25, R107-25, R108-25, R109-25,
     2. one vehicle number branch: R102-25
-    3. many arc flow branch     : R106-25
+    3. many arc flow branch     : R106-25, R110-25, R111-25, R112-25
 0602
 - there are 106,108,110,111 and 112 -25 have no result
 - arc flow branch is ok, but it needs to many branch nodes
@@ -24,9 +24,30 @@
 - some trival details
 
 0604
-- need to change the weight and volume, fW,fV,bW,bV to be W,V
+- need to change the weight and volume, fW,fV,bW,bV to be W,V???
 - dis --- no need for bidirectly forward 
 
+0607
+## Column generation Acceleration strategies
+### Preprocessing
+1. == narrow the solution space
+2. fixing some variables
+3. reducing the interval of values a variable can take and so on 
+, narrow down time window (eliminate some bad arcs)    (启发式，主动删去一些太远，成本太高的边， 虽然可达，但是很贵），= narrow the solution space
+### Subproblem strategies
+1. return many negative marginal cost columns to the master problem
+
+0608
+1. refactor code
+
+
+
+
+### Master problem strategy
+1. generate a set of initial columns by local search,  a good initial solution will accelerate our work
+2. 在每一个节点，在得到的整数解上，进行local search
+3. keep track of how long a column is part of a basis : deleting columns that have not been part of the basis for the last 20 branch-and-bound nodes 
+4. stop the algorithm for the SPPTWCC before it completes
  
  
 1. Constructive Heuristic Algorithms

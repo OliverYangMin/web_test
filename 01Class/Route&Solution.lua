@@ -1,4 +1,114 @@
+Route = {vtp = 1}
+Route.__index = Route
 
+function Route:new(vtp, cost)
+    local self = {vtp = vtp or 1, cost = cost}
+    setmetatable(self, Route)
+    self[0] = {id=0, fT = nodes[0].time1, bT=nodes[0].time2, fW = 0, fV = 0, bW=0, bV=0} 
+    return self
+end 
+
+function Route:contains(node)
+    for i=1,#self do
+        if self[i].id == node then 
+            return true
+        end 
+    end 
+    return false
+end 
+
+function Route:getBranchArc(cRoute, cForbids)
+    local function isIn(node1, node2)
+        for _,forbid in ipairs(cForbids) do
+            if node1 == forbid.arc[1] and node2 == forbid.arc[2] then
+                return true
+            end
+        end 
+    end 
+    
+    if not self:intersects(cRoute) then error(110) end 
+    for i=1,#self do
+        for j=1,#cRoute do
+            if self[i].id == cRoute[j].id then 
+                if self[i-1].id ~= cRoute[j-1].id then 
+                    if not isIn(self[i-1].id, self[i].id) then 
+                        return {self[i-1].id, self[i].id}
+                    end 
+                elseif i < #self then
+                    if (j == #cRoute or self[i+1].id ~= cRoute[j+1].id) and not isIn(self[i].id, self[i+1].id) then
+                        return {self[i].id, self[i+1].id}
+                    end
+                elseif j < #cRoute and not isIn(cRoute[j].id, cRoute[j+1].id) then 
+                    return {cRoute[j].id, cRoute[j+1].id}
+                end 
+                goto continue
+            end 
+        end
+        ::continue::
+    end 
+end 
+
+function Route:intersects(cRoute)
+    for i=1,#self do
+        for j=1,#cRoute do
+            if self[i].id == cRoute[j].id then
+                return true
+            end 
+        end 
+    end 
+    return false
+end 
+
+function Route:forward_mark(p)
+    for i=p,#self do
+        self[i].fT = push_forward(self[i-1], self[i].id)
+        self[i].fW = self[i-1].fW + nodes[self[i].id].weight
+        self[i].fV = self[i-1].fV + nodes[self[i].id].volume
+    end 
+end 
+
+function Route:backward_mark(p)
+    for i=p,1,-1 do
+        local point = self[i+1] or {id = 0, bT = nodes[0].time2, bW = 0, bV = 0}
+        self[i].bT = push_backward(point, self[i].id)
+        self[i].bW = point.bW + nodes[self[i].id].weight
+        self[i].bV = point.bV + nodes[self[i].id].volume
+    end
+end 
+
+function Route:push_back(node_id)
+    local fT, bT, forward
+    forward = self[#self]
+    fT = push_forward(forward, node_id)
+    bT = nodes[node_id].time2
+    table.insert(self, {id=node_id, fT=fT, bT=bT, fW=forward.fW + nodes[node_id].weight, fV=forward.fV + nodes[node_id].volume, bW=nodes[node_id].weight, bV=nodes[node_id].volume})
+    self:backward_mark(#self-1)
+end 
+
+function Route:append(point)
+    self[#self+1] = DeepCopy(point)
+end 
+
+function Route:push_back_seq(seq)
+    for i=1,#seq do
+        local fT, bT, forward
+        forward = self[#self]
+        fT = push_forward(forward, seq[i].id)
+        table.insert(self, {id=seq[i].id, fT=fT, bT=bT, fW=forward.fW + nodes[seq[i].id].weight, fV=forward.fV + nodes[seq[i].id].volume})
+    end
+    self[#self].bW = nodes[seq[#seq].id].weight
+    self[#self].bV = nodes[seq[#seq].id].volume
+    self[#self].bT = nodes[seq[#seq].id].time2
+    self:backward_mark(#self-1)
+end 
+
+function Route:getCost()
+    local cost = vehicle[self.vtp].fc
+    for i=1,#self do
+        cost = cost + dis(self[i-1].id, self[i].id) * vehicle[self.vtp].tc + math.max(0, nodes[self[i].id].time1 - self[i].bT) * vehicle[self.vtp].wc
+    end
+    return cost + dis(self[#self].id, 0) * vehicle[self.vtp].tc
+end 
 
 Solution = {cost = false, pena_cost = false, feasible = true}
 Solution.__index = Solution
@@ -86,7 +196,8 @@ function Solution:output()
 end 
 
 
-function Solution:plot()
+function Solution:plot(cputime)
+    cputime = cputime or 0
     if not Nodes then 
         Nodes = CreateShapes('nodes [Points]','point') 
         AddField(Nodes, 'id', 'int')
@@ -130,5 +241,5 @@ function Solution:plot()
     end 
     --SetParameter(Routes, "COLORS_TYPE", 3)
     Update(Routes)
-    CreateView(string.format('VRP result cost: %.2f and %d vehicles', self:getCost(), #self), Nodes, Routes)
+    CreateView(string.format('VRP result cost %.2f and %d vehicles and CPU time %.2f', self:getCost(), #self, cputime), Nodes, Routes)
 end
