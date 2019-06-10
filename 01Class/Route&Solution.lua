@@ -219,7 +219,7 @@ function Solution:plot(cputime)
             SetValue(shp, '[' .. nodes[i].time1/10 .. ',' .. nodes[i].time2/10 .. ']', 'TW')
         end
         Update(Nodes)
-        --SetParameter(Nodes, "COLORS_TYPE", 3)
+        SetParameter(Nodes, "COLORS_TYPE", 3)
         SetParameter(Nodes, "LABEL_ATTRIB", 1)
     end 
     

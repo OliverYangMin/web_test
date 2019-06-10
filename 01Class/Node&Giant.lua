@@ -89,3 +89,11 @@ function Giant:markBackward(node)   --从node开始，包括node，向前更新 
         node = self[node].pre
     end 
 end 
+
+function Giant:iterate(i, func)
+    local j = -1 
+    repeat 
+        j = func(i, j)
+    until j == -1 or i < nodes[nodes[-1].pre].route
+end 
+

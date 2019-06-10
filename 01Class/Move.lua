@@ -7,18 +7,14 @@ function Move:new(delta)
     return self
 end 
 
-function Move:execute()
-    
-end 
-
 function Move:print(move_type)
-    if self.delta<0 then 
-        print('The solution has been imporved: ', self.delta, ' by ', move_type)
-    else 
-        print('The solution be deteriorated temporary: ', self.delta, ' by ', move_type)
-    end    
+--    if self.delta<0 then 
+--        print('The solution has been imporved: ', self.delta, ' by ', move_type)
+--    else 
+--        print('The solution be deteriorated temporary: ', self.delta, ' by ', move_type)
+--    end    
 end 
--------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------intra route------------------------------------------------------------------------------------------------------------------
 TwoOptMove = Move:new(delta)
 TwoOptMove.__index = TwoOptMove
 
@@ -49,7 +45,28 @@ function TwoOptMove:execute()
     nodes:markBackward(self.pos1)
     self:print('2-Opt')
 end 
--------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------inter route-------------------------------------------------------------------------------------------------------
+OrOptMove = Move:new()
+OrOptMove.__index = OrOptMove
+
+function OrOptMove:new(delta, node, pos)
+    local self = {delta = delta, node = node, pos = pos}
+    setmetatable(self, OrOptMove)
+    return self
+end 
+
+function OrOptMove:execute()
+    local point = nodes[self.node]
+    local a = point.suc
+    nodes[point.pre].suc = point.suc
+    nodes[point.suc].pre = point.pre
+    point.pre, point.suc = self.pos, nodes[self.pos].suc 
+    nodes[self.pos].suc, nodes[nodes[self.pos].suc].pre = self.node, self.node
+    markForward(a)
+    markBackward(self.node)
+end 
+
+
 TwoOptStarMove = Move:new()
 TwoOptStarMove.__index = TwoOptStarMove
 

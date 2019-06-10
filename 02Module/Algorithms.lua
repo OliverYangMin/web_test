@@ -8,7 +8,7 @@ require '02Module.Neighborhood'
 function SteepestDescent(operator, strategy)
     while true do
         local move = Neighborhood(operator, strategy)
-        if move.delta<0 then
+        if move.delta < 0 then
             move:execute()
         else 
             break
@@ -185,25 +185,17 @@ end
    
 --end 
 
---function LargeNeighborhoodSearch(cSolu, accept)
+function LargeNeighborhoodSearch(accept)
+    local cSolu = {cost = solution:getCost()}
     
---    solution:sort()
---    while true do    
---        local new_solu = repair(destroy(cSolu))
---        if , cSolu)  then 
---            cSolu = new_solu:clone()
---        end 
---        if new_solu:getCost()<solution:getCost() then
---            solution = new_solu:clone()
---        end 
---    end 
---    while terminating() do
---        local new_solu = repair(destroy(cSolu))
---        if accept(new_solu, cSolu)  then 
---            cSolu = new_solu:clone()
---        end 
---        if new_solu:getCost()<solution:getCost() then
---            solution = new_solu:clone()
---        end 
---    end 
---end 
+    for iter=1,100 do    
+        destroy()
+        repair()
+        if nodes:getCost() < cSolu.cost then 
+            cSolu = nodes:to_solution()
+        end 
+        if cSolu.cost < solution:getCost() then
+            solution = cSolu
+        end 
+    end 
+end 

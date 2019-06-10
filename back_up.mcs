@@ -1,3 +1,30 @@
+function isIn(node, cSet)
+    for i=1,#cSet do
+        if node == cSet[i] then
+            return true
+        end 
+    end 
+end 
+
+validInequalities = {}
+
+function getNodesSet(cSet)
+    local count = 0
+    for r=1,#nodes do
+        if not isIn(r, cSet) and 
+            count = cout + 1
+            getNodeSet(cSet)
+        end 
+    end 
+    if count == 0 and cSet:getVehicle > 1 then
+        validInequalities[#validInequalities+1] = cSet
+    end 
+end 
+
+function separationAlgorithm()
+
+end 
+
 --local module_vrp 	= AddModule("main","Solve VRP")
 
 --local prm_vrp 		= AddParameter(module_vrp, nil, "node", "Disruption Parameters")
@@ -9,48 +36,7 @@
 --FIGUREDISPLAY           = AddParameter(module_vrp, display_vrp, "check", "Is figure output?", true) 
 --FILEDISPLAY             = AddParameter(module_vrp, display_vrp, "check", "Is file output?", false)
 
-function plot()
-     if not Nodes then 
-        Nodes = CreateShapes('nodes [Points]','point') 
-        AddField(Nodes, 'id', 'int')
-        AddField(Nodes, 'ptype', 'int') -- dont do that:the color of attributes put at first place
-        AddField(Nodes, 'weight', 'float')
-        AddField(Nodes, 'volume', 'float')
-        AddField(Nodes, 'route', 'int')
-        for i=0,#nodes do
-            local shp = AddShape(Nodes, nodes[i].x, nodes[i].y) 
-            if i==1 then 
-                SetValue(shp, 1, 'ptype')
-            else
-                SetValue(shp, 2, 'ptype')
-            end 
-            SetValue(shp, i, 'id')
-            SetValue(shp, nodes[i].weight, 'weight')
-            SetValue(shp, nodes[i].weight, 'volume')
-        end
-        Update(Nodes)
-        SetParameter(Nodes, "COLORS_TYPE", 3)
-        SetParameter(Nodes, "LABEL_ATTRIB", 1)
-    end 
-    
-    local Routes = CreateShapes('Solution [Lines]','line')
-    AddField(Routes, 'id', 'int')
-    AddField(Routes, 'route_id', 'int')  --  dont do that: the color of attributes put at first place
-    local index, cPoint = 1, nodes[-1]
-    repeat 
-        if cPoint.suc>0 then 
-            local shp = AddShape(Routes, cPoint.x, cPoint.y, nodes[cPoint.suc].x,nodes[cPoint.suc].y)
-            SetValue(shp, index, 'id')
-            SetValue(shp, -cPoint.route, 'route_id')
-            index = index + 1
-        end 
-        cPoint = nodes[cPoint.suc]
-    until (cPoint.id==0 and cPoint.route==-1)
-    SetParameter(Routes, "COLORS_TYPE", 3)
-    Update(Nodes)
-    Update(Routes)
-    CreateView('vrp result cost: ' .. self:getCost(), Nodes, Routes)
-end 
+
 --routesNum = 3
 --SMD1_0 = {}
 --for i=1,#nodes do
@@ -158,76 +144,7 @@ function Solution:getCost()
     return self.cost
 end 
 
-function Solution:appendRoute(route)
-    table.insert(self, route)
-end 
 
-function Solution:clone()
-    return DeepCopy(self)
-end 
------???---
-function Solution:sort()
-    table.sort(self, function(a,b) return #a<#b end)
-end 
-
-function Solution:executeMove(Move)
-    local route1 = self[Move[1].r]
-    if Move[1].r==Move[2].r then 
-        if Move.mtp==0 then
-            for a=1, math.floor((Move[2].p-Move[1].p)/2) do
-                route1[Move[1].p+a], route1[Move[2].p+1-a] = route1[Move[2].p+1-a], route1[Move[1].p+a]
-            end 
-            for a=Move[1].p+1,Move[2].p do
-                forward_mark(route1, a)
-            end 
-            for a=Move[2].p,Move[1].p+1,-1 do
-                backward_mark(route1, a)
-            end 
-        elseif Move.mtp==1 then
-            table.insert(route1,  Move[2].p + 1, route1[Move[1].p])
-            table.remove(route1,  Move[1].p)
-            forward_mark(route1,  math.min(Move[2].p + 1, Move[1].p))
-            backward_mark(route1, math.max(Move[2].p + 1, Move[1].p))
-        end 
-    else
-        local route2 = Move[2] and self[Move[2].r] or nil
-        if Move.mtp==0 then
-            for a=1,math.max(#route1-Move[1].p,#route2-Move[2].p) do
-                route1[Move[1].p + a], route2[Move[2].p + a] = route2[Move[2].p + a], route1[Move[1].p + a]
-            end 
-            if #route1==0 then 
-                table.remove(self, Move[1].r)
-            else
-                forward_mark(route1, Move[1].p + 1)
-                backward_mark(route1, Move[1].p)
-            end 
-            if #route2==0 then 
-                table.remove(self, Move[2].r)
-            else
-                forward_mark(route2, Move[2].p + 1)
-                backward_mark(route2, Move[2].p)
-            end 
-        elseif Move.mtp==1 then
-            table.insert(route2, Move[2].p + 1, route1[Move[1].p])
-            forward_mark(route2, Move[2].p + 1)
-            backward_mark(route2, Move[2].p + 1)
-            if #route1==1 then 
-                table.remove(self, Move[1].r)
-            else
-                table.remove(route1, Move[1].p)
-                forward_mark(route1, Move[1].p)
-                backward_mark(route1, Move[1].p - 1)
-            end 
-        elseif Move.mtp==2 then
-            route1[i], route2[j] = route2[j], route1[i]
-        end     
-    end 
---    if Move.delta<0 then 
---        print('The solution has been imporved: ', Move.delta)
---    else 
---        print('The solution be deteriorated temporary: ', Move.delta)
---    end 
-end 
 
 function Solution:output()
     io.output(#solution .. '+'.. solution:getCost() .. 'Result.csv')
@@ -259,105 +176,4 @@ function Solution:output()
     end
     
     io.close()
-end 
-
-function Solution:plot()
-    if not Nodes then 
-        Nodes = CreateShapes('nodes [Points]','point') 
-        AddField(Nodes, 'id', 'int')
-        AddField(Nodes, 'ptype', 'int') -- dont do that:the color of attributes put at first place
-        AddField(Nodes, 'weight', 'float')
-        AddField(Nodes, 'volume', 'float')
-        AddField(Nodes, 'route', 'int')
-        AddField(Nodes, 'TW', 'string')
-        for i=0,#nodes do
-            local shp = AddShape(Nodes, nodes[i].x, nodes[i].y) 
-            SetValue(shp, i==0 and 0 or 1, 'ptype')
-            SetValue(shp, i, 'id')
-            SetValue(shp, nodes[i].weight, 'weight')
-            SetValue(shp, nodes[i].weight, 'volume')
-            SetValue(shp, '[' .. nodes[i].time1 .. ',' .. nodes[i].time2 .. ']', 'TW')
-        end
-        Update(Nodes)
-        SetParameter(Nodes, "COLORS_TYPE", 3)
-        SetParameter(Nodes, "LABEL_ATTRIB", 1)
-    end 
-    SetValue(Nodes, 0, 'route', 1) 
-    local Routes = CreateShapes('Solution [Lines]','line')
-    AddField(Routes, 'id', 'int')
-    AddField(Routes, 'route_segment', 'int')  --  dont do that: the color of attributes put at first place
-    AddField(Routes, 'route_travel_time', 'float')
-    for i, route in ipairs(self) do
-        for j=0,#route-1 do 
-            local shp = AddShape(Routes, nodes[route[j].id].x,nodes[route[j].id].y,nodes[route[j+1].id].x,nodes[route[j+1].id].y)
-            SetValue(shp, i, 'id')
-            SetValue(shp, j, 'route_segment')
-            if j>0 then
-                SetValue(Nodes, route[j].id+1, 'route', route[#route].id) 
-            end 
-        end
-    end 
-    SetParameter(Routes, "COLORS_TYPE", 3)
-    Update(Routes)
-    CreateView('vrp result cost: ' .. self:getCost(), Nodes, Routes)
-end
-
-
-local function isVisitAllNodesOnce(cSolu)
-    local count = {}
-    for i=1,#cSolu do
-        for j=1,#cSolu[i] do
-            count[cSolu[i][j].id] = count[cSolu[i][j].id] and count[cSolu[i][j].id]+1 or 1
-        end 
-    end
-    for i=1,#nodes do
-        if not count[i] then 
-            print('node',i, 'not be visited')
-            return false
-        elseif count[i] > 1 then
-            print('node',i, 'visit ',count[i])
-            return false
-        end  
-    end 
-    return true
-end 
-
-local function checkRoute(cRoute)
-    local cumWeight, cumVolume, t = 0, 0, 0
-    for i=0,#cRoute-1 do
-        cumWeight = cumWeight + nodes[cRoute[i].id].weight
-        cumVolume = cumVolume + nodes[cRoute[i].id].volume
-        if cumWeight>vehicle[cRoute.v_type].weight or cumVolume>vehicle[cRoute.v_type].volume then 
-            print('dsdsfsfsd')
-            return false 
-        end
-        t = t + time[cRoute[i].id][cRoute[i+1].id] + nodes[cRoute[i].id].stime 
-        if t > nodes[cRoute[i+1].id].time2 then return false end 
-        t = math.max(t, nodes[cRoute[i+1].id].time1)
-    end 
-    if not OPEN then 
-        if t + time[cRoute[#cRoute].id][0] + nodes[cRoute[#cRoute].id].stime >= nodes[0].time2 then 
-            return false
-        end 
-    end 
-    for i=1,#cRoute do
-        if cRoute[i].bT>nodes[cRoute[i].id].time2 then
-            return false
-        end 
-    end 
-    return true
-end 
-
-
-function Solution:isFeasible()
-    if not isVisitAllNodesOnce(self) then 
-        self.feasible = false
-        return false 
-    end 
-    for r,route in ipairs(self) do
-        if not checkRoute(route) then 
-            return false
-        end 
-    end 
-    return 'Congratulations!!!'
 end 

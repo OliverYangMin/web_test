@@ -2,6 +2,12 @@
 **A framework of algorithms for VRP with side constraints**
 
 # 工作日志 update log
+0610
+- work for this project every day before my job
+- 
+
+
+
 0531
 - 修正了wait time evaluation, needed to extends to Vidal WT test
 - branch  1.vehicle num 2. arc flow
@@ -39,6 +45,11 @@
 
 0608
 1. refactor code
+## valid inequality
+### k-path inequality: it requirs taht at least k paths enter the set S in any feasible integer solution
+    1. define the flow network, with xij > 0
+    2. find a customers Set
+    3. 
 
 
 
@@ -51,23 +62,26 @@
  
  
 1. Constructive Heuristic Algorithms
-    1. BackAndForth
-    2. Solomon`s Nearest insertion
-    3. Clark Wright
+    1. BackAndForth *finished*
+    2. Solomon`s Nearest insertion *finished*
+    3. Clark Wright *finished*
     4. Insertion I
 2. Improvement Heuristic Algorithms
-    1. SteepestDescent Algorithm
+    - *traditional neiborhoods*:size is growing polynomially with n in a controlled manner such that all solutions in the neighborhood can be evaluated by explicit enumeration.
+    1. SteepestDescent Algorithm *finished*
     2. SimulateAnnealing Algorithm
     3. Variable Neighborhoods Search
     4. Tabu Search
     5. Iterated Local Search
+    - *large neighborhoods*: size is growing exponentially with n that cannot be searched explicitly
     6. Large Neighborhood Search
 3. Population Heuristic Algorithms
     1. Genetic Algorithm
     2. Memetic Algorithm
 4. Exact Algorithms
     1. column generation
-    2. BranchAndBound
+    2. BranchAndPrice
+    3. BranchAndCutAndPrice
     
 # Solution Data Structure
 1. Solution: multiple routes list
@@ -104,7 +118,9 @@ point : 节点的table，包含各种类型== nodes[i] = {x,y,id=i, bT,bW,bV,fT,
 # 系统 framework 设计
 明确  Input\Output
 
-
+### Local search Speedup Techniques
+- *filtering* : considering only moves that connect nearby customers; time-window considerations
+- *sequential search*
 
 
 

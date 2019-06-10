@@ -29,10 +29,57 @@ end
 function Neighbors(operator)   --领域使用迭代生成器，一个一个返回move
     return coroutine.wrap(function() operator() end)
 end  
+--------------------------------Or_opt----------------------------------------------------------
+function or_opt()
+    local i = nodes[-1].suc
+    repeat
+        local j = nodes[i].suc < 0 and  nodes[i].suc or nodes[nodes[i].suc].suc  
+        while j ~= -1 and j >= nodes[nodes[-1].pre].route do
+            local sign = true 
+            if not ((i < 0 and j < 0) or (nodes[i].suc < 0 and nodes[j].suc < 0)) then 
+                local move 
+                if feasible:sameRoute(i, j) then
+                    if not (i < 0 and nodes[j].suc < 0) then 
+                        move = create2OptMove(i, j) 
+                        if not move then sign = false end
+                    end
+                else
+                    sign = feasible:concateTwoSegments(j, nodes[i].suc) 
+                    if sign then move = create2OptStarMove(i, j) end 
+                end 
+                if move then 
+                    coroutine.yield(move) 
+                end
+            end 
+            j = sign and nodes[j].suc or nodes[j].route - 1
+        end
+        i = nodes[i].suc
+    until i == -1 or i < nodes[nodes[-1].pre].route
+end 
+
+
+
+
 ---------------------------------node_relocate----------------------------------------------------------
+function relocate(i, j)
+    local sign 
+    if j ~= i and j ~= nodes[i].pre and nodes[j].id ~= nodes[nodes[j].suc].id then
+        if feasible:sameRoute(i, j) then 
+            
+        else
+            sign = feasible:relocate(i, j)
+            if sign==true then 
+                coroutine.yield(RelocateMove:new(delta_free + cDelta:insertNodeCost(i, j), i, j))
+            end 
+        end
+    end 
+    return sign == 'next_route' and nodes[j].route - 1 or nodes[j].suc
+end 
+
 function node_relocate()
     for i=1,#nodes do
         local delta_free = cDelta:freeNodeCost(i)
+        --nodes:iterate(relocate)
         local j = -1 
         repeat 
             local sign 
@@ -120,3 +167,20 @@ function node_swap()
     end 
 end 
 ---------------------------------node_swap----------------------------------------------------------
+function cross_exchange()
+    
+
+end 
+
+
+
+
+
+
+
+
+
+
+
+
+
