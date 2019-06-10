@@ -15,9 +15,7 @@ function BranchNode:columnGeneration()
         if master:solve() ~= 0 then return nil end 
         master:setNodesDual()
         self.routes[#self.routes+1], self.routes[#self.routes+2] = master:solveSubproblem()
-        --print(string.format('the LP relax obj = %02f and The min reduced cost = %02f', master:getObj(),self.routes[#self.routes].cost))
-    until self.routes[#self.routes].cost > -0.1
-    --print('Total iteration = ', iter)
+    until self.routes[#self.routes].cost > -0.1  -- stop early to accelarate
     return master
 end
 

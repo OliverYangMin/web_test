@@ -159,14 +159,21 @@ function Master:solveSubproblem()
         end
     until #unprocessed == 0    
     --local negative_routes = {}
-    for i=2,#useful do 
+    for i=#useful,1,-1 do 
         useful[i].cost = useful[i].cost + dis(useful[i].id, 0) - self.carDual
-        --if useful[i].cost < -0.0001 then
-            --negative_routes[#negative_routes+1] = useful[i]:to_route
-        --end 
+--        if useful[i].cost >= 0 then
+--            table.remove(useful, i)
+--            --negative_routes[#negative_routes+1] = useful[i]:to_route
+--        end 
     end 
     
     table.sort(useful, function(a,b) return a.cost < b.cost end)
+--    if useful[2] then 
+--        return useful[1]:to_route(), useful[2]:to_route() 
+--    elseif useful[1] then
+--        return useful[1]:to_route()
+--    end
+    
     if useful[2].cost < -0.0001 then 
         return useful[1]:to_route(), useful[2]:to_route() 
     else

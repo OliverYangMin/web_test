@@ -1,7 +1,7 @@
-local model	= AddModule("main", 'Solve VRPTW with metaheuristic')
+local model	    = AddModule("main", 'Solve VRPTW with metaheuristic')
 local TYPE      = AddParameter(model, nil, 'choice', 'Type of Solomon', "C|R|RC", 1)
-local NUMBER	= AddParameter(model, nil, 'value', 'the number of solomon', 1)
-local SIZE      = AddParameter(model, nil, 'value', 'the size of solomon', 25)
+local NUMBER	= AddParameter(model, nil, 'value',  'the number of solomon', 1)
+local SIZE      = AddParameter(model, nil, 'value',  'the size of solomon', 25)
 
 function init()
     require '01Class.Move'
@@ -24,12 +24,13 @@ function main()
     local starttime = os.clock()
     solution = Solution:new()
     Constructives.NearestInsertion(0.9, 0.05, 0.05)
-    solution:plot()
+    --solution:plot()
     solution:to_giantTour()   
 -------------------------Improvement Phase------------------------------------------------------------------------------------------- 
     solution = Algorithms.VariableNeighborhoodSearch({node_relocate, node_swap, two_opt_star}, 71)
     
     solution:plot(os.clock() - starttime)
+    
     print('The algorithm`s total computation time = ', os.clock() - starttime)
     print('The total cost of best tour plan = ', solution:getCost())
     print('The number of vehicle be used: ', #solution)

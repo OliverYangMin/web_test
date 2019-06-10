@@ -4,7 +4,7 @@ Route.__index = Route
 function Route:new(vtp, cost)
     local self = {vtp = vtp or 1, cost = cost}
     setmetatable(self, Route)
-    self[0] = {id=0, fT = nodes[0].time1, bT=nodes[0].time2, fW = 0, fV = 0, bW=0, bV=0} 
+    self[0] = {id=0, fT = nodes[0].time1, bT = nodes[0].time2, fW = 0, fV = 0, bW = 0, bV = 0} 
     return self
 end 
 
@@ -14,7 +14,6 @@ function Route:contains(node)
             return true
         end 
     end 
-    return false
 end 
 
 function Route:getBranchArc(cRoute, cForbids)

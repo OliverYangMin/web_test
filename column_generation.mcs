@@ -14,16 +14,16 @@ function init()
     VRPIO = require '02Module.VRPIO'   
     Constructives = require '02Module.Constructives'
     Algorithms = require '02Module.Algorithms'
-end 
-
-
-function main()
-    init()
     UpBound, BestVehicles, best_solution  = math.huge, math.huge, {}
     local solomon = {'C', 'R', 'RC'}
     nodes, Dis, Time, vehicle = VRPIO.read_solomon(solomon[TYPE] .. NUMBER + 100, SIZE)
     preprocessing()
     nodes[0].dual = 0
+end 
+
+
+function main()
+    init()
     local starttime = os.clock()
     solution = {}
     BranchNode:new():solve()

@@ -199,3 +199,19 @@ function LargeNeighborhoodSearch(accept)
         end 
     end 
 end 
+
+--function AdaptiveLargeNeighborhoodSearch()
+--    repeat
+--        local destroy = chooseDestory()
+--        local repair  = chooseRepair()
+--        destroy()
+--        repair()
+--        if accept() then
+--            solution = nodes:to_solution()
+--        end 
+--        dscore[1] = dscore[1] + 1
+--        rscore[1] = rscore[1] + 1
+        
+--    until a 
+--end 
+
