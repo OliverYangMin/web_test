@@ -1,0 +1,63 @@
+local model1	= AddModule("metaheuristic_main", 'Metaheuristic')
+local model2	= AddModule("exact_main", 'Exact')
+
+
+local CATEGORY  = AddParameter(model1, nil, 'choice', 'Solomon|Gehring&Homberger', "Solomon|GH", 1)
+local TYPE1     = AddParameter(model1, nil, 'choice', 'Type of Instance', "C|R|RC", 1)
+local NUMBER1	= AddParameter(model1, nil, 'value',  'the number of solomon', 1)
+local SIZE1     = AddParameter(model1, nil, 'value',  'the size of solomon', 25)
+--local ALGORITHM = AddParameter(model1, nil, 'choice', 'How to solve', "Heuristic|Metaheuristic|Exact", 1)
+local PICTURE1  = AddParameter(model1, nil, 'check', 'plot or not', false)
+
+local TYPE2     = AddParameter(model2, nil, 'choice', 'Type of Solomon', "C|R|RC", 1)
+local NUMBER2	= AddParameter(model2, nil, 'value', 'the number of solomon', 1)
+local SIZE2     = AddParameter(model2, nil, 'value', 'the size of solomon', 25)
+local PICTURE2  = AddParameter(model2, nil, 'check', 'plot or not', true)
+
+local function init()
+    require '01Class.Node&Giant'
+    require '01Class.Route&Solution'
+    require '02Module.BasicFunction'
+    VRPIO = require '02Module.VRPIO'   
+    Constructives = require '02Module.Constructives'
+end
+function metaheuristic_main()
+    require '01Class.Move'
+    require '01Class.Delta'
+    require '01Class.Feasible'
+    Algorithms = require '02Module.Algorithms'
+    init()
+    local solomon = {'C', 'R', 'RC'}
+    nodes, Dis, Time, vehicle = VRPIO.read_solomon(solomon[TYPE1] .. NUMBER1 + 100, SIZE1)
+    math.randomseed(195)
+    cDelta, feasible = Delta:new(), Feasible:new() 
+    local starttime = os.clock()
+    solution = Constructives.NearestInsertion(0.8, 0.1, 0.1)
+    --solution = Constructives.Insertion1(0.8, 0.1, 0.1,0.3)
+    --solution:to_giantTour()   
+-------------------------Improvement Phase------------------------------------------------------------------------------------------- 
+    --solution = Algorithms.VariableNeighborhoodSearch({node_relocate, node_swap, two_opt_star}, 5000)
+    if PICTURE1 then solution:plot(os.clock() - starttime) end 
+    print(string.format('The best objective value is %.1f and vehicle number is %d', solution:getCost(), #solution))
+    print('Total CPU time is ', os.clock() - starttime)
+end 
+
+function exact_main()
+    require '04CG.Master'
+    require '04CG.Label'
+    require '04CG.Forbid'
+    require '04CG.BranchNode'
+    init()
+    UpBound, BestVehicles, best_solution  = math.huge, math.huge, {}
+    local solomon = {'C', 'R', 'RC'}
+    nodes, Dis, Time, vehicle = VRPIO.read_solomon(solomon[TYPE2] .. NUMBER2 + 100, SIZE2)
+    preprocessing()
+    nodes[0].dual = 0
+    local starttime = os.clock()
+    solution = {}
+    BranchNode:new():solve()
+    
+    if PICTURE2 then solution:plot(os.clock() - starttime) end 
+    print(string.format('The best objective value is %.1f and vehicle number is %d', UpBound, BestVehicles))
+    print('Total CPU time is ', os.clock() - starttime)
+end

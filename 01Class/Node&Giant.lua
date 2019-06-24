@@ -2,7 +2,7 @@ Node = {}
 Node.__index = Node
 
 function Node:new(id, x, y, weight, time1, time2, stime, volume)
-    local self = {id = id, x = x, y = y, weight = weight, volume = volume or 0, time1 = time1, time2 = time2, stime = stime}
+    local self = {id = id, x = x, y = y, weight = weight, volume = volume or 0, time1 = time1 or 0, time2 = time2 or 600, stime = stime or 0}
     setmetatable(self, Node)
     return self
 end 
@@ -15,6 +15,17 @@ function Giant:new()
     setmetatable(self, Giant)
     return self
 end
+
+function Giant:getPenaltyRouteCost(route_id)
+    if nodes[-route_id] then
+        local cPoint, cost = nodes[-route_id], (nodes[-route_id].bW - vehicle[self[cPoint.pre].vtp].weight) * alpha
+        repeat
+            cost = dis(cPoint.pre, cPoint.id) * vehicle[self[cPoint.pre].vtp].tc + math.max(0, cPoint.time2 - cPoint.bT) * vehicle[self[cPoint.pre].vtp].wc
+            cost = cost + math.max(0, cPoint.fT - cPoint.time2) * beta
+        until cPoint.id < 0
+        return cost
+    end
+end 
 
 function Giant:getCost()
     local cPoint, distance, cost = nodes[-1], 0, 0 

@@ -93,12 +93,18 @@ function Route:push_back_seq(seq)
         local fT, bT, forward
         forward = self[#self]
         fT = push_forward(forward, seq[i].id)
-        table.insert(self, {id=seq[i].id, fT=fT, bT=bT, fW=forward.fW + nodes[seq[i].id].weight, fV=forward.fV + nodes[seq[i].id].volume})
+        table.insert(self, {id = seq[i].id, fT = fT, bT = bT, fW = forward.fW + nodes[seq[i].id].weight, fV = forward.fV + nodes[seq[i].id].volume})
     end
     self[#self].bW = nodes[seq[#seq].id].weight
     self[#self].bV = nodes[seq[#seq].id].volume
     self[#self].bT = nodes[seq[#seq].id].time2
     self:backward_mark(#self-1)
+end 
+
+function Route:insert(node, pos)
+    table.insert(self, pos+1, {id = node})
+    self:backward_mark(pos+1)
+    self:forward_mark(pos+1)
 end 
 
 function Route:getCost()
@@ -108,6 +114,33 @@ function Route:getCost()
     end
     return cost + dis(self[#self].id, 0) * vehicle[self.vtp].tc
 end 
+
+--function Route:getPenaltyCost()
+--    local T = 0
+--    local Q = math.max(0, self[#self].fW - vehicle[self.vtp].weight)
+--    local arrival_time = 0
+--    for i=1,#self do
+--        arrival_time = arrival_time + self[i-1].stime +  time(self[i-1].id, self[i].id)
+--        if arrival_time > nodes[self[i]].time2 then
+--            T = T + nodes[self[i]].time2 - arrival_time
+--        elseif arrival_time < nodes[self[i]].time1 then
+--            arrival_time = nodes[self[i]].time1
+--        end 
+--    end  
+    
+--    if Q == 0 and alpha >= 0.001 then
+--        alpha = alpha / (1 + sita)
+--    elseif Q > 0 and alpha <= 2000 then
+--        alpha = alpha * (1 + sita)
+--    end 
+    
+    
+    
+    
+--    return self:getCost() + Q * alpha + T * beta
+--end 
+
+
 
 Solution = {cost = false, pena_cost = false, feasible = true}
 Solution.__index = Solution
@@ -238,7 +271,7 @@ function Solution:plot(cputime)
             end 
         end
     end 
-    --SetParameter(Routes, "COLORS_TYPE", 3)
+    SetParameter(Routes, "COLORS_TYPE", 3)
     Update(Routes)
     CreateView(string.format('VRP result cost %.2f and %d vehicles and CPU time %.2f', self:getCost(), #self, cputime), Nodes, Routes)
 end

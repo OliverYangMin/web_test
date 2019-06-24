@@ -34,13 +34,12 @@ function Feasible:insert(node1, node2, node3)
     if self:weight_volume(nodes[node1], nodes[node2], nodes[node3]) then 
         if dis(node1, node2) and dis(node2, node3) then     
             local fT = push_forward(nodes[node1], node2)
-            if fT <= nodes[node2].time2 and fT + nodes[node2].stime + time(node2, node3) <= nodes[node3].bT then
-                return true
-            end
+            return fT <= nodes[node2].time2 and fT + nodes[node2].stime + time(node2, node3) <= nodes[node3].bT 
         end 
     end 
-    return false
 end 
+
+
 
 function Feasible:relocate(node, pos)
     local point1, point2, point3 = nodes[pos], nodes[node], nodes[nodes[pos].suc]

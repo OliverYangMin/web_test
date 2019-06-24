@@ -1,6 +1,48 @@
 # Min_VRP-Solver
 **A framework of algorithms for VRP with side constraints**
 
+## 重要分支日志
+### Allow Infeasible Solution
+- time window penalty TW   time-warp
+- weight and volume penalty  在每条路径上
+- 
+
+
+
+
+
+
+## Variants变种的处理
+### Multi-depot
+多仓库如何处理，每个客户点除了要分配给一辆车意外，还需要分配给一个仓库
+- 增加一个虚拟主仓库，每辆车从虚拟仓库出发，先选择仓库作为第一个点，最后返回仓库
+- 虚拟仓库到实际仓库的距离为0
+
+### Open route
+开放式VRP，因为有些公司，完成每天任务后，各自回家，所以不需要返回仓库，如何处理
+- 将各点到仓库的距离设置为0即可
+
+###VRP with Backhual
+考虑回程货的VRP，送完货后，返回仓库的过程中，可以利用空间，再赚点钱
+- 先delivery后pickup
+- 增加紧前约束
+- 存在一个转折点
+
+
+
+- b-cyclic, k-transfer
+- string cross, string exchange, string relocation, and string mix 
+
+
+
+
+
+
+
+
+
+
+
 # 工作日志 update log
 0610
 - work for this project every day before my job

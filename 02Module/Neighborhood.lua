@@ -14,6 +14,16 @@ function Neighborhood(operator, strategy)
     --operator()
 end 
 
+function BestNeighborhood(operator)
+    local move = {delta = math.huge}
+    for new_move in Neighbors(operator) do
+        if new_move and new_move.delta < move.delta then
+            move = new_move
+        end 
+    end  
+    return move
+end 
+
 function RandomNeighbor(operator)
     local moves = {}
     for move in Neighbors(operator) do
@@ -28,6 +38,10 @@ end
 
 function Neighbors(operator)   --领域使用迭代生成器，一个一个返回move
     return coroutine.wrap(function() operator() end)
+end  
+
+function TabuNeighbors(operator, tabus)   --领域使用迭代生成器，一个一个返回move
+    return coroutine.wrap(function() operator(tabu) end)
 end  
 --------------------------------Or_opt----------------------------------------------------------
 function or_opt()

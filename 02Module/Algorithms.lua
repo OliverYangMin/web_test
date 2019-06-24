@@ -5,6 +5,19 @@
 module(..., package.seeall)
 require '02Module.Neighborhood'
 
+--function TabuSearch(operators)
+--    for iter=1,100 do
+--        local move = TabuNeighborhood(operator, tabus)
+        
+--        if not tabu:isForbidden(move) then
+--            move:execute()
+--            if nodes:isFeasible() and nodes:getCost() < solution:getCost() then
+--                solution = nodes:to_solution
+--            end 
+--        end     
+--    end 
+--end 
+
 function SteepestDescent(operator, strategy)
     while true do
         local move = Neighborhood(operator, strategy)
@@ -46,26 +59,27 @@ function SimulateAnnealing(operator, ...)
 end   
 
 function VariableNeighborhoodSearch(operators, max_iter)
-    local best_solution = nodes:to_solution()
     for i=1,max_iter do
         SetProgress(i, max_iter)
+        
         RandomNeighbor(operators[math.random(#operators)]):execute()
+        
         local index = 1
         while index <= #operators do
             local move = Neighborhood(operators[index])
             if move.delta < 0 then
                 move:execute()
-                if nodes:getCost() < best_solution.cost then 
-                    best_solution = nodes:to_solution()
+                if nodes:getCost() < solution:getCost() then 
+                    solution = nodes:to_solution()
                 end 
                 index = 1
             else 
                 index = index + 1
             end 
         end  
-        print('Iteration number:', i, ' and ', nodes:getCost())
+        --print('Iteration number: ', i, ' and ', nodes:getCost())
     end 
-    return best_solution
+    return solution
 end 
 
 local function greedyAccept(cMove)
