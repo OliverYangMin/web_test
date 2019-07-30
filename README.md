@@ -1,6 +1,50 @@
 # Min_VRP-Solver
 **A framework of algorithms for VRP with side constraints**
 
+我的车辆路径问题求解框架，采用rich VRP的思想，将构造式constructive算法、基于single trajectory的元启发式算法、基于population的元启发算法和精确exact算法整合起来，构建好玩好用的一份work
+
+## Constructives
+1. back_forth
+2. NearestNeighbor
+3. Solomon Insertion I
+4. Clark Wright 
+## single-metaheuristics
+- Steepest Descent
+- Simulated Annealing
+- Tabu Search
+- Variable Neighbor Search
+- ILS
+- GLS
+- LNS
+- ALNS
+## population-metaheuristics
+- GA
+- MA
+- PSO
+- ACO
+- Path Relink
+
+## Exact
+- Column Generation
+- Branch and Bound
+- Branch and Price
+- Cut
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 重要分支日志
 ### Allow Infeasible Solution
 - time window penalty TW   time-warp
