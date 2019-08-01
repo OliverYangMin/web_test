@@ -3,6 +3,19 @@
 
 我的车辆路径问题求解框架，采用rich VRP的思想，将构造式constructive算法、基于single trajectory的元启发式算法、基于population的元启发算法和精确exact算法整合起来，构建好玩好用的一份work
 
+
+## Reference
+### Heuristics
+- Solomon, Marius M . Algorithms for the Vehicle Routing and Scheduling Problems with Time Window Constraints[J]. Operations Research, 1987, 35(2):254-265.
+- Vidal T , Crainic T G , Gendreau M , et al. Heuristics for multi-attribute vehicle routing problems: A survey and synthesis[J]. European Journal of Operational Research, 2013, 231(1):1-21.
+- Vidal T , Crainic T G , Gendreau M , et al. A hybrid genetic algorithm with adaptive diversity management for a large class of vehicle routing problems with time-windows[J]. Computers & Operations Research, 2013, 40(1):475-489.
+- Schneider M , Sand B , Stenger A . A note on the time travel approach for handling time windows in vehicle routing problems[J]. Computers & Operations Research, 2013, 40(10):2564–2568.
+- Irnich S , Funke B , Tore Grünert. Sequential search and its application to vehicle-routing problems[J]. Computers & Operations Research, 2006, 33(8):2405-2429.
+- Irnich, S. A Unified Modeling and Solution Framework for Vehicle Routing and Local Search-Based Metaheuristics[J]. INFORMS Journal on Computing, 2008, 20(2):270-287.
+### Exact
+- Desrochers M , Desrosiers J , Solomon M M . A new optimization algorithm for the vehicle routing problem with time windows[M]. INFORMS, 1992.
+- Kohl N , Desrosiers J , Madsen O B G , et al. 2-Path Cuts for the Vehicle Routing Problem with Time Windows[J]. Transportation Science, 1999, 33(1):101-116.
+- Righini G , Salani M . Symmetry helps: Bounded bi-directional dynamic programming for the elementary shortest path problem with resource constraints[J]. Discrete Optimization, 2006, 3(3):255-273.
 ## Constructives
 1. back_forth
 2. NearestNeighbor
@@ -39,16 +52,10 @@
 
 
 
-
-
-
-
-
-
 ## 重要分支日志
 ### Allow Infeasible Solution
 - time window penalty TW   time-warp
-- weight and volume penalty  在每条路径上
+- weight and volume penalty 
 - 
 
 
